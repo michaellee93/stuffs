@@ -1,7 +1,7 @@
 <template>
   <div class="block content">
     <icon-tray @click="active = true" v-show="active" @format="bold" />
-    <editor-content :editor="editor" />
+    <editor-content :class="{ 'editor-content': editable }" :editor="editor" />
   </div>
 </template>
 
@@ -9,13 +9,12 @@
 import { Editor, EditorContent } from "@tiptap/vue-2";
 import StarterKit from "@tiptap/starter-kit";
 import IconTray from "./IconTray.vue";
-//import { marked } from "marked";
 import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Link from "@tiptap/extension-link";
-import { autodef } from "./autolinks/helpers/autolink";
+import { autodef } from "./autolink";
 
 class DefSet {
   constructor(rootDomain, definitions = {}) {
@@ -61,7 +60,15 @@ export default {
     EditorContent,
     IconTray,
   },
-  props: ["content", "definitions", "active"],
+  props: {
+    content: {},
+    definitions: {},
+    active: {},
+    editable: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       editor: null,
@@ -136,6 +143,7 @@ export default {
     //setTerms(this.definitions);
     this.editor = new Editor({
       content: this.content,
+      editable: this.editable,
       extensions: [
         StarterKit,
         Table.configure({
@@ -167,7 +175,7 @@ export default {
 </script>
 
 <style>
-.ProseMirror {
+.editor-content > .ProseMirror {
   min-height: 100px;
   border: 1px #dbdbdb solid;
   border-radius: 4px;

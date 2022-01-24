@@ -9,7 +9,7 @@
 
 <script>
 import http from "../http";
-import List from "./List.vue";
+import List from "@/components/List.vue";
 
 export default {
   props: ["block_type"],

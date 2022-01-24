@@ -1,5 +1,4 @@
 <template>
-  <!--<editor @created="toContent" :create="true" />-->
   <fake-it :cancel="true" :create="true" @created="toContent" />
 </template>
 

@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="columns">
-      <!--<aside class="menu column is-2">
+      <aside class="menu column is-2">
         <p class="menu-label">Fields</p>
         <ul class="menu-list">
           <li v-for="(_, k, i) in schemas[content_type]" :key="i">
             <a :href="`#${k}`">{{ k }}</a>
           </li>
         </ul>
-      </aside>-->
+      </aside>
       <section id="add" class="column is-10">
         <div class="block buttons">
           <button v-if="cancel" class="button" @click="cancelEdit">
@@ -91,16 +91,6 @@
           </div>
 
           <div v-else-if="v.type === 'metric'">
-            <!--<label class="label">PD</label>
-            <input class="input block" />
-            <label class="label">LGD</label>
-            <input class="input block" />
-            <label class="label">Tenor</label>
-            <input class="input block" />
-            <label class="label">Servicing</label>
-            <input class="input block" />
-            <label class="label">Leverage</label>
-            <input class="input block" />-->
             <new-editor :content="metrichtml" />
           </div>
 
@@ -171,7 +161,7 @@ import http from "@/http.js";
 import NewEditor from "./editor/NewEditor.vue";
 export default {
   name: "FakeIt",
-  props: ["cancel", "create", "save", "publish"],
+  props: ["cancel", "create", "save", "publish", "document_id"],
   components: { NewEditor },
   data() {
     return {
@@ -208,24 +198,23 @@ export default {
         {},
         { Rules: [""], Outcomes: [""], Delegations: [""] },
       ],
-      /*blocks: [
-        "<p>Test content</p><ul><li>Item 1</li><li>Item 2</li><li>Item</li></ul>",
-      ],*/
-      content_type: 6,
+      content_type: 0,
       content_types: [
         "Definition",
         "Industry Credit Standard",
         "Process",
+        "URL",
         "Product",
         "Guidance",
-        "URL",
         "Credit Standard",
       ],
       schemas: [
+        // Definition
         {
           Title: { type: "input" },
           Definition: { type: "block" },
         },
+        //ICS
         {
           //ics
           Title: { type: "input" },
@@ -260,7 +249,8 @@ export default {
           Category: { type: "drop", values: ["Origination", "Maintenance"] },
           Steps: { type: "blocks" },
         },
-
+        //URL
+        { URL: { type: "input" } },
         //Product
         {
           Title: { type: "input" },
@@ -283,8 +273,7 @@ export default {
           "At a Glance": { type: "block" },
           Banking: { type: "block" },
         },
-        //URL
-        { URL: { type: "input" } },
+
         // Credit standards
         {
           Title: { type: "input" },
@@ -315,9 +304,9 @@ export default {
         code: max + 1,
         description: this.desc,
       });
+      this.desc = "";
     },
-    saveDocument() {},
-    async createDocument() {
+    grabContent() {
       let data = {};
       let content = {};
       Object.keys(this.schemas[this.content_type]).forEach((e) => {
@@ -327,11 +316,19 @@ export default {
       data["content"] = content;
       data["content_type"] = this.content_type + 1;
       data["owner_id"] = this.owner_id;
-
+      return data;
+    },
+    saveDocument() {},
+    async createDocument() {
+      let data = this.grabContent();
       await http.post(this.API_URL + "/doc", data);
       this.$emit("created");
     },
-    publishDocument() {},
+    async publishDocument() {
+      let data = this.grabContent();
+      await http.put(this.API_URL + "/doc", data);
+      this.$emit("created");
+    },
     cancelEdit() {
       this.$router.go(-1);
     },

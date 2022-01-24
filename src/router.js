@@ -1,6 +1,6 @@
 //import { datePick, versionView, recView, dependencyView, newDocView, linkAdder, newEditor, block, searchView, listView, contentView, iconTray } from './components/components'
 import FakeIt from './components/FakeIt.vue'
-import contentView from './components/ContentView.vue'
+import contentView from '@/views/ContentView.vue'
 import searchView from './components/SearchView.vue'
 import draftsView from './components/DraftsView.vue'
 import documentView from './components/DocumentView.vue'

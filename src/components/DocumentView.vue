@@ -1,23 +1,8 @@
 <template>
   <div class="column" :class="{ columns: top }">
-    <div
-      style="position: relative; padding-top: 0.75em"
-      class="block"
-      :class="{ column: top }"
-    >
-      <button v-if="logged" @click="createDraft" class="button block">
-        Edit
-      </button>
-      <button v-if="version && logged" class="button" @click="goToHistory">
-        View History
-      </button>
-      <h1 class="title">{{ document.title }}</h1>
-      <block
-        v-for="(c, i) in document.content"
-        :block="c"
-        :key="i"
-        :depth="depth + 1"
-      />
+    <div class="column is-10">
+      <h1 class="title">{{ document.content.title }}</h1>
+      <new-editor :editable="false" :content="document.content.Definition" />
     </div>
     <reco-view v-if="top" :document_id="document_id" />
   </div>
@@ -25,8 +10,7 @@
 
 <script>
 import http from "../http";
-import { marked } from "marked";
-import Block from "./Block.vue";
+import NewEditor from "./editor/NewEditor.vue";
 import RecoView from "./RecoView.vue";
 
 export default {
@@ -50,6 +34,7 @@ export default {
   },
   data() {
     return {
+      editors: [],
       document: {
         title: "",
       },
@@ -59,7 +44,6 @@ export default {
   },
   watch: {
     pre() {
-      console.log(this.tender);
       this.document.content = [];
       setTimeout(() => {
         this.document = this.pre;
@@ -68,30 +52,14 @@ export default {
     },
   },
 
-  /*beforeRouteEnter() {
-        http.get(`/doc/${this.document_id}`).then(data => {
-            this.document = data;
-        });
- 
-    },*/
-
   methods: {
-    parseMarkdown(text) {
-      return marked.parse(text);
-    },
-    show(content) {
-      switch (content.content_type) {
-        case "text":
-          return this.parseMarkdown(content.text);
-        case "embed":
-          return "";
-        case "link":
-          return content.text;
-      }
-    },
     async createDraft() {
-      await http.post(this.API_URL + `/doc/${this.document_id}`, {});
-      this.$router.push(`/drafts/${this.document_id}`);
+      try {
+        await http.post(this.API_URL + `/doc/${this.document_id}`, {});
+        this.$router.push(`/drafts/${this.document_id}`);
+      } catch {
+        console.log("couldn't create drafts");
+      }
     },
     goToHistory() {
       this.$router.push(`/docs/${this.document_id}/versions`);
@@ -104,7 +72,7 @@ export default {
       this.document = await http.get(this.API_URL + `/doc/${this.document_id}`);
     }
   },
-  components: { Block, RecoView },
+  components: { RecoView, NewEditor },
 };
 </script>
 
