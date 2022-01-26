@@ -9,7 +9,7 @@
           </li>
         </ul>
       </aside>
-      <section id="add" class="column is-10">
+      <section id="add" class="column is-10 content">
         <div class="block buttons">
           <button v-if="cancel" class="button" @click="cancelEdit">
             Cancel
@@ -36,7 +36,11 @@
         <div class="field">
           <label class="label">Content Type</label>
           <div class="select is-fullwidth">
-            <select v-model="content_type" id="type is-primary">
+            <select
+              :disabled="document.version > 1"
+              v-model="content_type"
+              id="type is-primary"
+            >
               <option :value="i" v-for="(bl, i) in content_types" :key="i">
                 {{ bl }}
               </option>
@@ -64,7 +68,7 @@
           <label class="label">{{ k }}</label>
 
           <div v-if="v.type == 'drop'" class="select">
-            <select>
+            <select v-model="drops[content_type][k]">
               <option :key="possible" v-for="possible in v.values">
                 {{ possible }}
               </option>
@@ -98,6 +102,7 @@
             <new-editor
               :definitions="titles"
               :content.sync="blocks[content_type][k]"
+              :editor-text.sync="editorText"
               :active="i == currBlock"
               @activated="currBlock = i"
             />
@@ -110,6 +115,7 @@
               :num="i"
               :definitions="titles"
               :content.sync="blocks[content_type][k][i]"
+              :editor-text.sync="editorText"
               :active="i == currBlock"
               @activated="currBlock = i"
             />
@@ -132,7 +138,8 @@
                   <td>{{ alphatise(rule.code) }}</td>
                   <td>{{ rule.description }}</td>
                 </tr>
-
+              </tbody>
+              <tfoot>
                 <tr>
                   <td>
                     <button
@@ -145,7 +152,7 @@
                   </td>
                   <td><input v-model.trim="desc" class="input" /></td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
           </div>
 
@@ -161,12 +168,19 @@ import http from "@/http.js";
 import NewEditor from "./editor/NewEditor.vue";
 export default {
   name: "FakeIt",
-  props: ["cancel", "create", "save", "publish", "document_id"],
+  props: {
+    cancel: {},
+    create: { default: false },
+    save: {},
+    publish: {},
+    document_id: {},
+  },
   components: { NewEditor },
   data() {
     return {
+      document: {},
       desc: "",
-      owner: null,
+      owner: -1,
       users: [
         "User Name",
         "Aldous Huxley",
@@ -181,11 +195,7 @@ export default {
         "11330: Dried buttermilk manufacturing",
         "11500: Oil and Fat Manufacturing",
       ],
-      rules: [
-        { code: 0, description: "Rule 1" },
-        { code: 1, description: "Rule 2" },
-        { code: 5, description: "Rule 3" },
-      ],
+      rules: [],
       title: "",
       blocks: [
         {
@@ -198,6 +208,7 @@ export default {
         {},
         { Rules: [""], Outcomes: [""], Delegations: [""] },
       ],
+      editorText: "",
       content_type: 0,
       content_types: [
         "Definition",
@@ -207,6 +218,15 @@ export default {
         "Product",
         "Guidance",
         "Credit Standard",
+      ],
+      drops: [
+        {},
+        { Security: null, Industry: null, "Client Type": null },
+        { Category: null },
+        {},
+        { "Product Family": null },
+        { Industry: null },
+        {},
       ],
       schemas: [
         // Definition
@@ -293,32 +313,48 @@ export default {
 
       return String.fromCharCode(65 + one, 46, 65 + two, 46, 65 + three);
     },
-    addRule() {
-      let max = 0;
-      this.rules.forEach((e) => {
-        if (e.code > max) {
-          max = e.code;
-        }
-      });
-      this.rules.push({
-        code: max + 1,
-        description: this.desc,
-      });
+    async addRule() {
+      let rule = await http.post(
+        this.API_URL +
+          "/doc/" +
+          this.document_id +
+          "/rules?name=" +
+          encodeURI(this.desc)
+      );
+      this.rules.push(rule);
       this.desc = "";
     },
     grabContent() {
       let data = {};
       let content = {};
-      Object.keys(this.schemas[this.content_type]).forEach((e) => {
-        content[e] = this.blocks[this.content_type][e];
+      let schema = this.schemas[this.content_type];
+      Object.keys(schema).forEach((e) => {
+        switch (schema[e].type) {
+          case "drop":
+            content[e] = this.drops[this.content_type][e];
+            break;
+          case "blocks":
+            content[e] = this.blocks[this.content_type][e];
+            break;
+          case "block":
+            content[e] = this.blocks[this.content_type][e];
+            break;
+        }
       });
       content["title"] = this.title;
       data["content"] = content;
       data["content_type"] = this.content_type + 1;
-      data["owner_id"] = this.owner_id;
+      data["owner_id"] = this.owner;
       return data;
     },
-    saveDocument() {},
+    async saveDocument() {
+      let data = this.grabContent();
+      await http.put(
+        this.API_URL + "/doc/" + this.document_id + "/draft",
+        data
+      );
+      this.$emit("saved");
+    },
     async createDocument() {
       let data = this.grabContent();
       await http.post(this.API_URL + "/doc", data);
@@ -326,8 +362,10 @@ export default {
     },
     async publishDocument() {
       let data = this.grabContent();
-      await http.put(this.API_URL + "/doc", data);
-      this.$emit("created");
+      console.log(data);
+      data.search = data.title + "\n\n" + this.editorText;
+      await http.put(this.API_URL + "/doc/" + this.document_id, data);
+      this.$emit("published");
     },
     cancelEdit() {
       this.$router.go(-1);
@@ -342,11 +380,43 @@ export default {
     addLong() {
       this.longBlocks.push("");
     },
+    getBlockFromJson() {},
   },
-  created() {
-    fetch(this.API_URL + "/titles")
-      .then((r) => r.json())
-      .then((j) => (this.titles = j));
+
+  async created() {
+    this.titles = await http.get(this.API_URL + "/titles");
+    if (this.create) {
+      return;
+    }
+    let document = await http.get(
+      this.API_URL + "/doc/" + this.document_id + "/draft"
+    );
+    this.document = document;
+    this.content_type = this.document.content_type - 1;
+
+    let schema = this.schemas[this.content_type];
+    Object.keys(schema).forEach((e) => {
+      switch (schema[e].type) {
+        case "drop":
+          this.drops[this.content_type][e] = document.content[e];
+          break;
+        case "blocks":
+          this.blocks[this.content_type][e] = document.content[e];
+          break;
+        case "block":
+          this.blocks[this.content_type][e] = document.content[e];
+          break;
+      }
+    });
+    this.title = this.document.content.title;
+    this.owner = this.document.owner_id;
+
+    if (this.document.content_type == 7) {
+      this.rules = await http.get(
+        this.API_URL + "/doc/" + this.document_id + "/rules"
+      );
+      console.log("cs");
+    }
   },
 };
 </script>

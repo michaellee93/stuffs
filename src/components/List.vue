@@ -9,11 +9,19 @@
       <slot name="item" v-bind:item="item">
         <div class="columns">
           <div @click="selectItem(item)" class="column is-9">
-            <p class="is-size-5">{{ item.content.title }}</p>
+            <p class="is-size-5">
+              {{ item.content.title || item.content.url || "New #" + item.id }}
+            </p>
             <p class="is-size-7">{{ preview(item) }}</p>
           </div>
           <div class="column is-2">
-            <button class="button" @click="createDraft(item)">Edit</button>
+            <button
+              v-show="current_user == item.owner_id"
+              class="button"
+              @click="createDraft(item)"
+            >
+              Edit
+            </button>
           </div>
         </div>
       </slot>
@@ -29,6 +37,7 @@ export default {
       default: [],
       required: true,
     },
+    current_user: {},
   },
   methods: {
     selectItem(item) {
@@ -38,23 +47,19 @@ export default {
       let created = new Date(item.created_at);
       let published = new Date(item.published_at);
       if (created.getFullYear() > 1) {
-        return (
-          "Created: " + created.toLocaleString().slice(0, 10)
-        );
+        return "Created: " + created.toLocaleString().slice(0, 10);
       } else if (published.getFullYear() > 1) {
-                return (
-          "Published: " + published.toLocaleString().slice(0, 10)
-        );
+        return "Published: " + published.toLocaleString().slice(0, 10);
       }
     },
 
     async createDraft(item) {
       try {
-        await http.post(`/doc/${item.id}`);
+        await http.post(this.API_URL + `/doc/${item.id}`);
+        this.$router.push(`/drafts/${item.id}`);
       } catch (e) {
         console.log(e);
       }
-      this.$router.push(`/drafts/${item.id}`);
     },
   },
 };

@@ -1,7 +1,12 @@
 <template>
   <div>
-    <dependency-view v-if="!create" :document_id="this.document_id" />
-    <fake-it :cancel="true" :save="true" :publish="true" />
+    <dependency-view :document_id="this.document_id" />
+    <fake-it
+      :document_id="this.document_id"
+      :cancel="true"
+      :save="true"
+      :publish="true"
+    />
   </div>
 </template>
 
@@ -24,37 +29,7 @@ export default {
     let data = await http.get(this.API_URL + `/doc/${this.document_id}/draft`);
     this.previewDocument = data;
   },
-  methods: {
-    async saveDocument() {
-      let body = {
-        title: this.title,
-        raw_content: this.addLink(this.raw_content),
-        block_type: this.block_type,
-      };
-      let data = await http.put(
-        this.API_URL + `/doc/${this.document_id}/draft`,
-        body
-      );
-      this.previewDocument = {};
-      this.previewDocument = data;
-      this.$emit("saved");
-    },
-
-    async createDocument() {
-      try {
-        let body = {
-          title: this.title,
-          raw_content: this.addLink(this.raw_content),
-          block_type: this.block_type,
-        };
-        await http.post(this.API_URL + "/doc", body);
-        this.$router.push("/drafts");
-        //this.$emit('created')
-      } catch (e) {
-        console.log(e);
-      }
-    },
-  },
+  methods: {},
 };
 </script>
 

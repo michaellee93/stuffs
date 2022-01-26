@@ -17,7 +17,7 @@ function find(text, terms) {
     return Array.from(text.matchAll(regex)).map(e => {
         return {
             isLink: true,
-            href: terms[e[0]],//`http://localhost:8080/#/docs/${terms[e[0]]}`,
+            href: terms[e[0].toLowerCase()],//`http://localhost:8080/#/docs/${terms[e[0]]}`,
             start: e.index,
             end: e.index + e[0].length,
         }
@@ -58,7 +58,6 @@ export function autodef(options) {
             }
 
             let terms = options.defs.getDefinitions();
-            //console.log(terms);
 
             const { tr } = newState
             const transform = combineTransactionSteps(oldState.doc, transactions)

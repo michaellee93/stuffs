@@ -10,16 +10,17 @@
     </div>
     <list v-if="docs.length > 0" @selected="selectItem" :items="docs">
       <template v-slot:item="slotProps">
-        <p class="is-size-5">{{ slotProps.item.title || "" }}</p>
-        <p class="is-size-6">
-          {{ slotProps.item.raw_content.slice(0, 144) + "..." || "" }}
-        </p>
-        <p class="is-size-7">
-          <em
-            >Published at {{ parseDate(slotProps.item.published_at) || "" }} by
-            Michael Lee</em
-          >
-        </p>
+        <div @click="selectItem(slotProps.item)">
+          <p class="is-size-5">{{ slotProps.item.content.title || "" }}</p>
+          <!--<p class="is-size-6">Published at: {{ slotProps.item.published_at }}</p>-->
+          <p class="is-size-7">
+            <em
+              >Published at
+              {{ parseDate(slotProps.item.published_at) || "" }} by User
+              Name</em
+            >
+          </p>
+        </div>
       </template>
     </list>
     <p v-else>

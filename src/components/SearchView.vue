@@ -9,9 +9,9 @@
     />
     <list v-if="results.length > 0" @selected="goToItem" :items="results">
       <template v-slot:item="slotProps">
-        <p class="is-size-6">{{ slotProps.item.title }}</p>
+        <p class="is-size-6">{{ slotProps.item.content.title }}</p>
         <p class="is-size-7">
-          {{ slotProps.item.raw_content.slice(0, 140) + "..." }}
+          {{ content_types[slotProps.item.content_type - 1] }}
         </p>
         <hr />
       </template>
@@ -30,6 +30,15 @@ export default {
       results: [],
       loading: false,
       timeout: null,
+      content_types: [
+        "Definition",
+        "Industry Credit Standard",
+        "Process",
+        "URL",
+        "Product",
+        "Guidance",
+        "Credit Standard",
+      ],
     };
   },
   methods: {

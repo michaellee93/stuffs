@@ -3,7 +3,11 @@
     <p style="padding-bottom: 8px">
       <strong>{{ capitalise(block_type) }}</strong>
     </p>
-    <list @selected="selectItem" :items="docs"></list>
+    <list
+      :current_user="current_user"
+      @selected="selectItem"
+      :items="docs"
+    ></list>
   </div>
 </template>
 
@@ -12,7 +16,7 @@ import http from "../http";
 import List from "@/components/List.vue";
 
 export default {
-  props: ["block_type"],
+  props: ["block_type", "current_user"],
   data() {
     return {
       docs: {},
@@ -33,6 +37,9 @@ export default {
       this.$router.push(`/docs/${item.id}`);
     },
     capitalise(txt) {
+      if (txt.length == 3) {
+        return txt.toUpperCase();
+      }
       return txt[0].toUpperCase() + txt.slice(1);
     },
   },

@@ -1,9 +1,17 @@
 <template>
   <div class="block buttons">
-    <button @click="clickButton('bold')" class="button">
+    <button
+      @click="clickButton('bold')"
+      :class="{ 'is-active': boldActive }"
+      class="button"
+    >
       <i class="fas fa-bold" />
     </button>
-    <button @click="clickButton('italic')" class="button">
+    <button
+      @click="clickButton('italic')"
+      :class="{ 'is-active': italicActive }"
+      class="button"
+    >
       <i class="fas fa-italic" />
     </button>
     <button @click="clickButton('heading')" class="button">
@@ -15,64 +23,87 @@
     <button @click="clickButton('ol')" class="button">
       <i class="fas fa-list-ol" />
     </button>
-    <button @click="undo" class="button">
+    <button @click="clickButton('undo')" class="button">
       <i class="fas fa-undo" />
     </button>
-    <button @click="redo" class="button">
+    <button @click="clickButton('redo')" class="button">
       <i class="fas fa-redo" />
     </button>
-    <button @click="clickButton('link')" class="button">
+    <div
+      @click="toggleLink"
+      class="button"
+      :class="{ 'is-active': linkActive }"
+    >
       <i class="fas fa-link" />
-    </button>
+    </div>
+    <search-box :active="linking" @selected="outputLink" @close="toggleLink" />
     <button @click="clickButton('embed')" class="button">
       <i class="fas fa-cube" />
     </button>
-    <button @click="clickButton('table')" class="button">
+    <div
+      @mouseenter="showTable = true"
+      @mouseleave="showTable = false"
+      class="button"
+    >
       <i class="fas fa-table" />
-    </button>
-    <button @click="clickButton('if')" class="button">
+      <ul class="table-list" v-show="showTable">
+        <li @click="clickButton('table', { action: 'create' })">
+          Create table
+        </li>
+        <li @click="clickButton('table', { action: 'delete' })">
+          Delete table
+        </li>
+        <li @click="clickButton('table', { action: 'addColumn' })">
+          Insert Column Before
+        </li>
+        <li @click="clickButton('table', { action: 'addRow' })">
+          Insert Row Before
+        </li>
+        <li @click="clickButton('table', { action: 'deleteColumn' })">
+          Delete Column
+        </li>
+        <li @click="clickButton('table', { action: 'deleteRow' })">
+          Delete Row
+        </li>
+        <li @click="clickButton('table', { action: 'toggleHeader' })">
+          Toggle Header
+        </li>
+      </ul>
+    </div>
+    <button @click="clickButton('cond')" class="button">
       <i class="fas fa-code-branch" />
     </button>
   </div>
 </template>
 
 <script>
+import SearchBox from "./SearchBox.vue";
 export default {
+  components: { SearchBox },
+  data() {
+    return {
+      showTable: false,
+      linking: false,
+    };
+  },
+  props: {
+    linkActive: {},
+    boldActive: {},
+    italicActive: {},
+  },
   methods: {
-    applyItalic() {
-      this.$emit("italic");
-    },
-    applyHeading() {
-      this.$emit("heading", { level: 2 });
-    },
-    applyUl() {
-      this.$emit("ul");
-    },
-    applyOl() {
-      this.$emit("ol");
-    },
-    undo() {
-      this.$emit("undo");
-    },
-    redo() {
-      this.$emit("redo");
-    },
-    applyBold() {
-      this.$emit("bold");
-    },
-    embed() {
-      this.$emit("embed");
-    },
-    link() {
-      this.$emit("link");
-    },
-
-    clickButton(kind) {
-      let attrs = {};
-      if (kind == "heading") {
-        attrs.level = 2;
+    toggleLink() {
+      if (this.linkActive) {
+        this.clickButton("link");
+      } else {
+        this.linking = !this.linking;
       }
-      this.$emit("format", kind, attrs);
+    },
+    outputLink(arg) {
+      this.clickButton("link", { href: arg });
+    },
+    clickButton(kind, args) {
+      this.$emit("format", kind, args);
     },
   },
 
@@ -85,4 +116,30 @@ export default {
 </script>
 
 <style>
+ul.table-list {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: white;
+  z-index: 100;
+  box-sizing: border-box;
+  list-style: none;
+  text-align: left;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin: 0;
+}
+
+.table-list > li {
+  padding: 3px 10px;
+  margin: 0;
+}
+
+.table-list > li:hover {
+  background-color: #eee;
+}
+
+.table-list :not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
 </style>

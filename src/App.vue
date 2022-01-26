@@ -36,17 +36,20 @@
     </header>
     <div class="tabs">
       <ul>
-        <li
-          @click="currentSection = index"
-          :class="{ 'is-active': currentSection == index }"
+        <router-link
+          :to="item.path"
+          :active-class="'is-active'"
+          :tag="'li'"
           v-for="(item, index) in tabs"
           :key="index"
+          ><a>{{ item.name }}</a></router-link
         >
-          <router-link :to="item.path">{{ item.name }}</router-link>
-        </li>
       </ul>
     </div>
-    <router-view :logged="loggedIn"></router-view>
+    <router-view
+      :logged="loggedIn"
+      :current_user="current_user_id"
+    ></router-view>
   </div>
 </template>
 
@@ -65,13 +68,15 @@ export default {
         { path: "/processes", name: "Processes" },
         { path: "/product", name: "Product" },
         { path: "/guidance", name: "Guidance" },
-        { path: "/reporting", name: "Reporting" },
-        { name: "Create", path: "/create" },
+        //        { path: "/reporting", name: "Reporting" },
+        { path: "/ics", name: "ICS" },
+        // { name: "Create", path: "/create" },
         { name: "Search", path: "/search" },
         { name: "Your drafts", path: "/drafts" },
       ],
       loggedIn: true,
       showLogout: false,
+      current_user_id: 0,
     };
   },
   computed: {

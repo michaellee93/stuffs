@@ -20,7 +20,7 @@
         have.
       </div>
     </article>
-    <button @click="handleClick" class="button is-warning">
+    <button @click="handleClick" class="button is-danger">
       Show References
     </button>
 
@@ -37,7 +37,7 @@
           </p>
           <div v-for="(d, i) in dependencies" :key="i" class="block">
             <p class="subtitle">
-              <a @click="handleSelect(d.id)">{{ d.title }}</a>
+              <a @click="handleSelect(d.id)">{{ d.content.title }}</a>
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default {
       this.$router.push(`/docs/${id}`);
     },
   },
-  mounted() {
+  async created() {
     this.getDependencies();
   },
 };
