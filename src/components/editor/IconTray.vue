@@ -107,11 +107,7 @@ export default {
     },
   },
 
-  async mounted() {
-    let res = await fetch("https://kit.fontawesome.com/50e8aa9853.js");
-    let t = await res.text();
-    eval(t);
-  },
+  async mounted() {},
 };
 </script>
 

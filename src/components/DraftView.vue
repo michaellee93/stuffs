@@ -6,6 +6,7 @@
       :cancel="true"
       :save="true"
       :publish="true"
+      @published="goBack"
     />
   </div>
 </template>
@@ -29,7 +30,11 @@ export default {
     let data = await http.get(this.API_URL + `/doc/${this.document_id}/draft`);
     this.previewDocument = data;
   },
-  methods: {},
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
+  },
 };
 </script>
 

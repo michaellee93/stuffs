@@ -7,6 +7,7 @@ import historyView from './components/HistoryView.vue'
 import createContent from './components/CreateContent.vue'
 import DraftView from './components/DraftView.vue'
 import VersionView from './views/VersionView.vue'
+import AdminView from './views/AdminView.vue'
 
 
 
@@ -33,6 +34,8 @@ const routes = [
     // Drafts
     { path: '/drafts', component: draftsView },
     { path: '/drafts/:document_id', component: DraftView, props: route => ({ document_id: route.params.document_id, cancel: true, save: true, publish: true }) },
+
+    { path: '/admin', component: AdminView }
 ];
 
 export default routes 

@@ -27,8 +27,16 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a href="#" class="dropdown-item">Profile</a>
+              <a @click="resetApp" class="dropdown-item">Reset App</a>
               <hr class="dropdown-divider" />
-              <a @click="loggedIn = false" class="dropdown-item">Logout</a>
+              <a
+                @click="
+                  loggedIn = false;
+                  current_user_id = 1000;
+                "
+                class="dropdown-item"
+                >Logout</a
+              >
             </div>
           </div>
         </div>
@@ -54,7 +62,7 @@
 </template>
 
 <script>
-//import HelloWorld from "./components/HelloWorld.vue";
+import http from "@/http";
 
 export default {
   name: "App",
@@ -73,6 +81,7 @@ export default {
         // { name: "Create", path: "/create" },
         { name: "Search", path: "/search" },
         { name: "Your drafts", path: "/drafts" },
+        { name: "Admin", path: "/admin" },
       ],
       loggedIn: true,
       showLogout: false,
@@ -85,13 +94,24 @@ export default {
         return this.allTabs;
       } else {
         return this.allTabs.filter(
-          (e) => e.name.toLowerCase().search(/your|create/) == -1
+          (e) => e.name.toLowerCase().search(/your|create|admin/) == -1
         );
       }
     },
   },
-  components: {
-    //HelloWorld,
+  methods: {
+    async resetApp() {
+      try {
+        await http.get(this.API_URL + "/hard_reset");
+      } finally {
+        this.$router.push("/");
+      }
+    },
+  },
+  async mounted() {
+    let res = await fetch("https://kit.fontawesome.com/50e8aa9853.js");
+    let t = await res.text();
+    eval(t);
   },
 };
 </script>

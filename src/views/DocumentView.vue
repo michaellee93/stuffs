@@ -13,15 +13,17 @@
     <div class="column columns">
       <div class="column is-10">
         <!-- document view for each type -->
-        <process v-if="document.content_type == 3" :document="document" />
-        <definition
-          v-else-if="document.content_type == 1"
-          :document="document"
-        />
+        <definition v-if="document.content_type == 1" :document="document" />
+        <i-c-s v-else-if="document.content_type == 2" :document="document" />
+        <process v-else-if="document.content_type == 3" :document="document" />
+
         <credit-standard
           v-else-if="document.content_type == 7"
           :document="document"
         />
+
+        <product v-else-if="document.content_type == 5" :document="document" />
+        <guidance v-else-if="document.content_type == 6" :document="document" />
       </div>
       <reco-view :document_id="document_id" />
     </div>
@@ -34,6 +36,9 @@ import RecoView from "@/components/RecoView.vue";
 import Process from "@/components/documents/Process.vue";
 import Definition from "../components/documents/Definition.vue";
 import CreditStandard from "../components/documents/CreditStandard.vue";
+import Guidance from "../components/documents/Guidance.vue";
+import Product from "../components/documents/Product.vue";
+import ICS from "../components/documents/ICS.vue";
 
 export default {
   name: "DocumentView",
@@ -85,9 +90,18 @@ export default {
       }
     }
   },
-  components: { RecoView, Process, Definition, CreditStandard },
+  components: {
+    RecoView,
+    Process,
+    Definition,
+    CreditStandard,
+    Guidance,
+    Product,
+    ICS,
+  },
 };
 </script>
+   
 
 <style>
 </style>

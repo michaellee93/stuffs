@@ -32,7 +32,15 @@
             Create
           </button>
         </div>
-
+        <div
+          v-show="saved"
+          class="message"
+          :class="{ 'is-success': saved, 'is-danger': !saved }"
+        >
+          <div class="message-body">
+            {{ this.saved ? "Saved successfully" : "Could not save" }}
+          </div>
+        </div>
         <div class="field">
           <label class="label">Content Type</label>
           <div class="select is-fullwidth">
@@ -125,7 +133,7 @@
             </button>
           </div>
 
-          <div v-else-if="v.type == 'resource'">
+          <!--<div v-else-if="v.type == 'resource'">
             <table class="table">
               <thead>
                 <tr>
@@ -154,6 +162,37 @@
                 </tr>
               </tfoot>
             </table>
+          </div>-->
+          <div v-else-if="v.type == 'resource'">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th style="min-width: 995px">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr :key="i" v-for="(block, i) in blocks[content_type][k]">
+                  <td>{{ alphatise(i + offset[k]) }}</td>
+                  <td>
+                    <new-editor
+                      :num="i"
+                      :definitions="titles"
+                      :content.sync="blocks[content_type][k][i]"
+                      :editor-text.sync="editorText"
+                      :active="i == currBlock && k == currRes"
+                      @activated="
+                        currBlock = i;
+                        currRes = k;
+                      "
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button @click="addBlock(k)" class="button is-fullwidth is-info">
+              Add Block
+            </button>
           </div>
 
           <div v-else>{{ v }}, {{ k }}, {{ i }}</div>
@@ -178,6 +217,8 @@ export default {
   components: { NewEditor },
   data() {
     return {
+      offset: { Standards: 0, Pathways: 26 * 26, Restrictions: 2 * 26 * 26 },
+      saved: null,
       document: {},
       desc: "",
       owner: -1,
@@ -197,6 +238,7 @@ export default {
       ],
       rules: [],
       title: "",
+      currRes: "Standards",
       blocks: [
         {
           Definition: ``,
@@ -206,7 +248,7 @@ export default {
         { Overview: "", Pricing: "", Technical: "", Processes: "" },
         { "At a Glance": "", Banking: "" },
         {},
-        { Rules: [""], Outcomes: [""], Delegations: [""] },
+        { Standards: [""], Pathways: [""], Restrictions: [""] },
       ],
       editorText: "",
       content_type: 0,
@@ -297,9 +339,11 @@ export default {
         // Credit standards
         {
           Title: { type: "input" },
-          Rules: { type: "resource" },
-          Outcomes: { type: "blocks" },
-          Delegations: { type: "blocks" },
+          Standards: { type: "resource" },
+          Pathways: { type: "resource" },
+          Restrictions: { type: "resource" },
+          //Pathways: { type: "blocks" },
+          //Restrictions: { type: "blocks" },
         },
       ],
     };
@@ -339,6 +383,9 @@ export default {
           case "block":
             content[e] = this.blocks[this.content_type][e];
             break;
+          case "resource":
+            content[e] = this.blocks[this.content_type][e];
+            break;
         }
       });
       content["title"] = this.title;
@@ -348,12 +395,17 @@ export default {
       return data;
     },
     async saveDocument() {
-      let data = this.grabContent();
-      await http.put(
-        this.API_URL + "/doc/" + this.document_id + "/draft",
-        data
-      );
-      this.$emit("saved");
+      try {
+        let data = this.grabContent();
+        await http.put(
+          this.API_URL + "/doc/" + this.document_id + "/draft",
+          data
+        );
+        this.saved = true;
+        this.$emit("saved");
+      } catch {
+        this.saved = false;
+      }
     },
     async createDocument() {
       let data = this.grabContent();
@@ -362,8 +414,8 @@ export default {
     },
     async publishDocument() {
       let data = this.grabContent();
+      data.search = data.content.title + "\n\n" + this.editorText;
       console.log(data);
-      data.search = data.title + "\n\n" + this.editorText;
       await http.put(this.API_URL + "/doc/" + this.document_id, data);
       this.$emit("published");
     },
@@ -377,10 +429,6 @@ export default {
     removeTag(i) {
       this.tags.splice(i, 1);
     },
-    addLong() {
-      this.longBlocks.push("");
-    },
-    getBlockFromJson() {},
   },
 
   async created() {
@@ -404,6 +452,9 @@ export default {
           this.blocks[this.content_type][e] = document.content[e];
           break;
         case "block":
+          this.blocks[this.content_type][e] = document.content[e];
+          break;
+        case "resource":
           this.blocks[this.content_type][e] = document.content[e];
           break;
       }

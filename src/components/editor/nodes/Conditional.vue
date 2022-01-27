@@ -1,9 +1,6 @@
 <template>
   <node-view-wrapper class="vue-component">
-    <ul class="block" style="padding-top: 15px">
-      <li v-for="(_, i) in content" :key="i" @click="currentTab = i">One</li>
-    </ul>
-    <span class="label" contenteditable="false">Vue Component</span>
+    <span class="label" contenteditable="false">If Else</span>
     <node-view-content class="contentx" />
   </node-view-wrapper>
 </template>
@@ -50,7 +47,7 @@ export default {
 }
 
 .contentx {
-  margin: 1rem 1rem 1rem;
+  margin: 2.5rem 1rem 1rem;
   padding: 0.5rem;
   border: 2px dashed #0d0d0d20;
   border-radius: 0.5rem;

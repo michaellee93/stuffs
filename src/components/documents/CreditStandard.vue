@@ -1,8 +1,66 @@
 <template>
   <div>
+    <h4 class="title is-5">Credit Standard</h4>
     <h1 class="title">{{ document.content.title }}</h1>
-
+    <hr />
     <div class="block content">
+      <h3>Standards</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :key="i" v-for="(stand, i) in document.content.Standards">
+            <td>{{ alphatise(i + offsets[0]) }}</td>
+            <td style="min-width: 500px">
+              <new-editor :editable="false" :content="stand" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="block content">
+      <h3>Pathways</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :key="i" v-for="(stand, i) in document.content.Pathways">
+            <td>{{ alphatise(i + offsets[1]) }}</td>
+            <td style="min-width: 500px">
+              <new-editor :editable="false" :content="stand" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="block content">
+      <h3>Restrictions</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :key="i" v-for="(stand, i) in document.content.Restrictions">
+            <td>{{ alphatise(i + offsets[2]) }}</td>
+            <td style="min-width: 500px">
+              <new-editor :editable="false" :content="stand" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--<div class="block content">
       <h2>Rules</h2>
       <table class="table">
         <thead>
@@ -21,24 +79,23 @@
     </div>
 
     <div class="block content">
-      <h2>Delegations</h2>
+      <h2>Pathways</h2>
       <new-editor
-        v-for="(out, i) in document.content.Delegations"
+        v-for="(out, i) in document.content.Pathways"
         :key="i"
         :editable="false"
         :content="out"
       />
     </div>
-
     <div class="block content">
-      <h2>Outcomes</h2>
+      <h2>Restrictions</h2>
       <new-editor
-        v-for="(out, i) in document.content.Outcomes"
+        v-for="(out, i) in document.content.Restrictions"
         :key="i"
         :editable="false"
         :content="out"
       />
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -49,7 +106,7 @@ export default {
   props: { document: { type: Object, required: true } },
   components: { NewEditor },
   data() {
-    return { rules: [] };
+    return { offsets: [0, 26 * 26, 2 * 26 * 26], rules: [] };
   },
   methods: {
     alphatise(number) {
