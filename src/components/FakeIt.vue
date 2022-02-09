@@ -117,20 +117,27 @@
           </div>
 
           <div v-else-if="v.type == 'blocks'">
-            <new-editor
+            <div
               v-for="(block, i) in blocks[content_type][k]"
               :key="i"
               :num="i"
-              :definitions="titles"
-              :content.sync="blocks[content_type][k][i]"
-              :editor-text.sync="editorText"
-              :active="i == currBlock"
-              @activated="currBlock = i"
-            />
+            >
+              <new-editor
+                :definitions="titles"
+                :content.sync="blocks[content_type][k][i]"
+                :editor-text.sync="editorText"
+                :active="i == currBlock"
+                @activated="currBlock = i"
+              />
 
-            <button @click="addBlock(k)" class="button is-fullwidth is-info">
-              Add Block
-            </button>
+              <button
+                v-show="i == currBlock"
+                @click="addBlock(k, i)"
+                class="button is-fullwidth is-info add-block-button"
+              >
+                Add Block
+              </button>
+            </div>
           </div>
 
           <!--<div v-else-if="v.type == 'resource'">
@@ -177,6 +184,7 @@
                   <td>
                     <new-editor
                       :num="i"
+                      :document_id="document_id"
                       :definitions="titles"
                       :content.sync="blocks[content_type][k][i]"
                       :editor-text.sync="editorText"
@@ -190,7 +198,10 @@
                 </tr>
               </tbody>
             </table>
-            <button @click="addBlock(k)" class="button is-fullwidth is-info">
+            <button
+              @click="addBlock(k)"
+              class="button is-fullwidth is-info add-block-button"
+            >
               Add Block
             </button>
           </div>
@@ -422,9 +433,12 @@ export default {
     cancelEdit() {
       this.$router.go(-1);
     },
-    addBlock(key) {
-      console.log(this.blocks[this.content_type][key]);
-      this.blocks[this.content_type][key].push("");
+    addBlock(key, index) {
+      console.log(key, index);
+      let current = this.blocks[this.content_type][key];
+      let next = current.slice(0, index + 1);
+      next.push("", ...current.slice(index + 1));
+      this.blocks[this.content_type][key] = next;
     },
     removeTag(i) {
       this.tags.splice(i, 1);
@@ -462,15 +476,19 @@ export default {
     this.title = this.document.content.title;
     this.owner = this.document.owner_id;
 
-    if (this.document.content_type == 7) {
+    /*if (this.document.content_type == 7) {
       this.rules = await http.get(
         this.API_URL + "/doc/" + this.document_id + "/rules"
       );
       console.log("cs");
-    }
+    }*/
   },
 };
 </script>
 
 <style>
+.add-block-button {
+  margin-bottom: 1rem;
+  margin-top: -0.4rem;
+}
 </style>

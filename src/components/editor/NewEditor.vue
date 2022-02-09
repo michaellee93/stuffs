@@ -22,7 +22,7 @@ import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Link from "@tiptap/extension-link";
 import { autodef } from "./autolink";
-import CustomNodeView from "./nodes/Extension.js";
+import { Conditional, Branch } from "./nodes/Extension.js";
 
 class DefSet {
   constructor(rootDomain, definitions = {}, currentID) {
@@ -33,7 +33,9 @@ class DefSet {
 
     let proxied = new Proxy(definitions, {
       get: (obj, prop) => {
-        return `${rootDomain}/${obj[prop]}`;
+        if (obj[prop] !== this.currentID) {
+          return `${rootDomain}/${obj[prop]}`;
+        }
       },
     });
 
@@ -50,7 +52,9 @@ class DefSet {
   setDefinitions(definitions) {
     let proxied = new Proxy(definitions, {
       get: (obj, prop) => {
-        return `${this.rootDomain}/${obj[prop]}`;
+        if (obj[prop] !== this.currentID) {
+          return `${this.rootDomain}/${obj[prop]}`;
+        }
       },
     });
 
@@ -94,6 +98,7 @@ export default {
       default: true,
     },
     editorText: {},
+    document_id: {},
   },
   data() {
     return {
@@ -167,11 +172,18 @@ export default {
         case "bold":
           this.editor.chain().focus().toggleBold().run();
           break;
+        case "paragraph":
+          this.editor.chain().focus().setParagraph().run();
+          break;
         case "italic":
           this.editor.chain().focus().toggleItalic().run();
           break;
         case "heading":
-          this.editor.chain().focus().toggleHeading({ level: 2 }).run();
+          this.editor
+            .chain()
+            .focus()
+            .toggleHeading({ level: args.level })
+            .run();
           break;
         case "link":
           this.handleLink(args);
@@ -221,7 +233,11 @@ export default {
   },
 
   mounted() {
-    this.defSet = new DefSet(this.APP_DOMAIN + "/#/docs", this.definitions);
+    this.defSet = new DefSet(
+      this.APP_DOMAIN + "/#/docs",
+      this.definitions,
+      this.document_id
+    );
     let that = this;
 
     //setTerms(this.definitions);
@@ -243,7 +259,8 @@ export default {
           autodef: true,
           defs: that.defSet,
         }),
-        CustomNodeView,
+        Branch,
+        Conditional,
       ],
       onUpdate({ editor }) {
         const json = editor.getJSON();

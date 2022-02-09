@@ -1,5 +1,11 @@
 <template>
   <div class="block buttons">
+    <button @click="clickButton('undo')" class="button">
+      <i class="fas fa-undo" />
+    </button>
+    <button @click="clickButton('redo')" class="button">
+      <i class="fas fa-redo" />
+    </button>
     <button
       @click="clickButton('bold')"
       :class="{ 'is-active': boldActive }"
@@ -14,20 +20,38 @@
     >
       <i class="fas fa-italic" />
     </button>
-    <button @click="clickButton('heading')" class="button">
-      <i class="fas fa-heading" />
+    <button @click="clickButton('paragraph')" class="button">
+      <i class="fas fa-paragraph" />
     </button>
+    <div
+      @mouseenter="showHeader = true"
+      @mouseleave="showHeader = false"
+      class="button"
+    >
+      <i class="fas fa-heading" />
+      <ul class="table-list" v-show="showHeader">
+        <li @click="clickButton('heading', { level: 2 })">
+          <h2 style="margin: 0">Header</h2>
+        </li>
+        <li @click="clickButton('heading', { level: 3 })">
+          <h3 style="margin: 0">Header</h3>
+        </li>
+        <li @click="clickButton('heading', { level: 4 })">
+          <h4 style="margin: 0">Header</h4>
+        </li>
+        <li @click="clickButton('heading', { level: 5 })">
+          <h5 style="margin: 0">Header</h5>
+        </li>
+        <li @click="clickButton('heading', { level: 6 })">
+          <h6 style="margin: 0">Header</h6>
+        </li>
+      </ul>
+    </div>
     <button @click="clickButton('ul')" class="button">
       <i class="fas fa-list-ul" />
     </button>
     <button @click="clickButton('ol')" class="button">
       <i class="fas fa-list-ol" />
-    </button>
-    <button @click="clickButton('undo')" class="button">
-      <i class="fas fa-undo" />
-    </button>
-    <button @click="clickButton('redo')" class="button">
-      <i class="fas fa-redo" />
     </button>
     <div
       @click="toggleLink"
@@ -37,9 +61,9 @@
       <i class="fas fa-link" />
     </div>
     <search-box :active="linking" @selected="outputLink" @close="toggleLink" />
-    <button @click="clickButton('embed')" class="button">
+    <!--<button @click="clickButton('embed')" class="button">
       <i class="fas fa-cube" />
-    </button>
+    </button>-->
     <div
       @mouseenter="showTable = true"
       @mouseleave="showTable = false"
@@ -84,6 +108,7 @@ export default {
     return {
       showTable: false,
       linking: false,
+      showHeader: false,
     };
   },
   props: {
@@ -129,6 +154,10 @@ ul.table-list {
 .table-list > li {
   padding: 3px 10px;
   margin: 0;
+}
+
+.table-list li + li {
+  margin-top: 0;
 }
 
 .table-list > li:hover {
