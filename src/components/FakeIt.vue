@@ -127,7 +127,9 @@
                 :content.sync="blocks[content_type][k][i]"
                 :editor-text.sync="editorText"
                 :active="i == currBlock"
+                :show-delete="blocks[content_type][k].length > 1"
                 @activated="currBlock = i"
+                @delete="deleteBlock(k, i)"
               />
 
               <button
@@ -440,11 +442,14 @@ export default {
       next.push("", ...current.slice(index + 1));
       this.blocks[this.content_type][key] = next;
     },
+    deleteBlock(key, index) {
+      let current = this.blocks[this.content_type][key];
+      current.splice(index, 1);
+    },
     removeTag(i) {
       this.tags.splice(i, 1);
     },
   },
-
   async created() {
     this.titles = await http.get(this.API_URL + "/titles");
     if (this.create) {

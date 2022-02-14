@@ -9,7 +9,9 @@
     />
     <list v-if="results.length > 0" @selected="goToItem" :items="results">
       <template v-slot:item="slotProps">
-        <p class="is-size-6">{{ slotProps.item.content.title }}</p>
+        <p @click="goToItem(slotProps.item)" class="is-size-6">
+          {{ slotProps.item.content.title }}
+        </p>
         <p class="is-size-7">
           {{ content_types[slotProps.item.content_type - 1] }}
         </p>

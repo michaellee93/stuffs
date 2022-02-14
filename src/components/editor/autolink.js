@@ -13,7 +13,6 @@ function find(text, terms) {
 
     let regex = new RegExp(keys.reduce((a, e) => a + '|' + e), 'gi');
 
-
     return Array.from(text.matchAll(regex)).map(e => {
         return {
             isLink: true,
@@ -47,11 +46,11 @@ function test(text, terms) {
 // takes auto link options returns a plugin
 export function autodef(options) {
     return new Plugin({
-        key: new PluginKey('autolink'),
+        key: new PluginKey('autodef'),
         appendTransaction: (transactions, oldState, newState) => {
             const docChanges = transactions.some(transaction => transaction.docChanged)
                 && !oldState.doc.eq(newState.doc)
-            const preventAutolink = transactions.some(transaction => transaction.getMeta('preventAutodef'))
+            const preventAutolink = transactions.some(transaction => transaction.getMeta('preventAutolink'))
 
             if (!docChanges || preventAutolink) {
                 return
@@ -120,7 +119,7 @@ export function autodef(options) {
                             })
                             // add link mark
                             .forEach(link => {
-                                console.log(link.from, link.to)
+                                // console.log(link.from)
                                 tr.addMark(link.from, link.to, options.type.create({
                                     href: link.href,
                                 }))

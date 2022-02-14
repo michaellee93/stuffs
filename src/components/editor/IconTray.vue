@@ -97,6 +97,9 @@
     <button @click="clickButton('cond')" class="button">
       <i class="fas fa-code-branch" />
     </button>
+    <button v-show="showDelete" @click="deleteBlock" class="button is-danger">
+      Delete Block
+    </button>
   </div>
 </template>
 
@@ -115,6 +118,7 @@ export default {
     linkActive: {},
     boldActive: {},
     italicActive: {},
+    showDelete: { default: false },
   },
   methods: {
     toggleLink() {
@@ -129,6 +133,9 @@ export default {
     },
     clickButton(kind, args) {
       this.$emit("format", kind, args);
+    },
+    deleteBlock() {
+      this.$emit("delete");
     },
   },
 

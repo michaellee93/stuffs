@@ -38,6 +38,7 @@ export function makeServer({ environment = "development" } = {}) {
         routes() {
             this.namespace = "api";
 
+            // get docs
             this.get("http://localhost:5000/docs", (schema, request) => {
                 let q = request.queryParams["block_type"];
                 var m = 0;
@@ -61,7 +62,7 @@ export function makeServer({ environment = "development" } = {}) {
                 return curr.map(e => { e.id = e._id; e._id = undefined; return e })
             });
 
-
+            // get a document
             this.get("http://localhost:5000/doc/:id", (schema, request) => {
                 let id = request.params.id;
                 let docs = schema.contents.where({ _id: id }).models;
@@ -71,33 +72,75 @@ export function makeServer({ environment = "development" } = {}) {
                 c._id = undefined;
                 return c.attrs;
             });
-            //publish draft
+
+            // publish draft
             this.put("http://localhost:5000/doc/:id", (schema, request) => {
                 // create doc
-                let id = request.params.id;
+                let id = Number(request.params.id);
                 let body = JSON.parse(request.requestBody)
-                //j                body._id = Number(id);
                 body.published_at = new Date().toISOString();
+
+                // links
+                let links = parseOutLinks(body);
+                let linksAdd = [];
+                let max = schema.contents.all().models.reduce((a, e) => {
+                    if (e._id > a) {
+                        return e._id;
+                    }
+                    return a;
+                }, 0);
+
+                links?.forEach(e => {
+                    if (e) {
+                        if (e.startsWith("/#/doc")) {
+                            // internal link                        
+                            let ch = e.split("/");
+                            let id = Number(ch[ch.length - 1]);
+                            linksAdd.push(id);
+                        } else {
+                            // external link
+                            // does it exist?
+                            let exists = schema.contents.findBy(c => c.content.title === e);
+                            if (exists) {
+                                // exists
+                                linksAdd.push(exists._id);
+                            } else {
+                                // it doesnt
+                                max++;
+                                let newc = schema.contents.create({ _id: max, content: { title: e }, version: 1, published_at: new Date().toISOString(), content_type: 4, owner_id: 0 });
+                                linksAdd.push(newc._id);
+                            }
+                        }
+                    }
+                });
+
+                // delete links
+                schema.links.where({ outcontent: id }).models.forEach(m => m.destroy());
+
+                // create links
+                linksAdd.forEach(l => {
+                    schema.links.create({ outcontent: id, incontent: l, created_at: new Date().toISOString() })
+                });
+
                 let c = schema.contents.findBy(c => c._id === Number(id) && c.published_at === "0001-01-01T00:00:00Z")
-                console.log(body, c);
                 c.update(body);
                 return c.attrs
             });
+
             // create draft
             this.post("http://localhost:5000/doc/:id", (schema, request) => {
                 // create drafts
-                let id = request.params.id;
+                let id = Number(request.params.id);
 
                 // check if there is a draft
                 let draft = schema.contents.findBy({ _id: id, published_at: "0001-01-01T00:00:00Z" })
                 if (draft) {
                     draft.id = draft._id;
                     draft._id = undefined;
-                    console.log("DRAFT")
                     return draft.attrs
                 }
 
-                let cont = schema.contents.where((c) => c._id === id || c._id === `${id}`).models;
+                let cont = schema.contents.where((c) => c._id === id).models;
                 let maxv = cont.reduce((a, e) => {
                     if (e.version > a) {
                         return e.version;
@@ -105,23 +148,31 @@ export function makeServer({ environment = "development" } = {}) {
                     return a;
                 }, 1);
                 //here
-                let currentVersion = schema.contents.findBy(c => c._id === Number(id) && c.version === maxv)
+                let currentVersion = schema.contents.findBy(c => c._id === id && c.version === maxv)
                 currentVersion.attrs['published_at'] = "0001-01-01T00:00:00Z"
                 currentVersion.attrs['created_at'] = new Date().toISOString();
                 currentVersion.version = maxv + 1;
 
                 currentVersion.id = undefined;
-                currentVersion._id = Number(id);
+                currentVersion._id = id;
 
                 let newVersion = schema.contents.create(currentVersion.attrs);
                 newVersion.id = newVersion._id;
                 newVersion._id = undefined
                 return newVersion.attrs;
             });
+
             // create document
             this.post("http://localhost:5000/doc", (schema) => {
-                let len = schema.contents.all().models.length;
-                let newc = schema.contents.create({ _id: len, content: {}, version: 1, published_at: "0001-01-01T00:00:00Z", content_type: 1 });
+                let max = schema.contents.all().models.reduce((a, e) => {
+                    if (e._id > a) {
+                        return e._id;
+                    }
+                    return a;
+                }, 0);
+                let newc = schema.contents.create({ _id: max + 1, content: {}, version: 1, published_at: "0001-01-01T00:00:00Z", content_type: 1 });
+                newc.id = newc._id;
+                newc._id = undefined;
                 return newc.attrs
             });
 
@@ -147,7 +198,6 @@ export function makeServer({ environment = "development" } = {}) {
             this.get("http://localhost:5000/doc/:id/draft", (schema, request) => {
                 let id = request.params.id;
                 let c = schema.contents.findBy(c => c._id == Number(id) && c.published_at === "0001-01-01T00:00:00Z");
-                console.log(c);
                 c.id = c._id;
                 c._id = undefined;
                 return c?.attrs;
@@ -168,17 +218,13 @@ export function makeServer({ environment = "development" } = {}) {
                 schema.links.where({ incontent: id }).models.forEach(e => {
                     set.add(e.outcontent);
                 });
-                console.log(set);
-                let c = schema.contents.where(e => set.has(e._id)).models/*.map(e => {
-                    return {
-                        title: e.content.title,
-                        id: e._id,
-                    }
-                });*/
-                console.log(c);
+                let c = schema.contents.where(e => set.has(e._id)).models.map(e => {
+                    e.id = e._id;
+                    e._id = undefined;
+                    return e;
+                })
                 return c;
             });
-
 
             this.get("http://localhost:5000/titles", (schema) => {
                 let c = schema.contents.where(c => c.content_type == 1 && c.published_at !== "0001-01-01T00:00:00Z").models;
@@ -190,10 +236,42 @@ export function makeServer({ environment = "development" } = {}) {
                 let defs = schema.contents.where(c => c.content_type == 1 && c.version == maxVersion[c._id]).models
                 let out = {};
                 defs.forEach(e => {
-                    out[e.content.title] = e._id;
+                    out[e.content.title.toLowerCase()] = e._id;
                 })
                 return out;
 
+            })
+
+            this.get("http://localhost:5000/search", (schema, request) => {
+                let query = request.queryParams.q;
+                console.log(query)
+                let reg = new RegExp(query.split(" ").reduce((a, e) => {
+                    if (e.length === 0) return a;
+                    return a + "|" + e
+                }), "gi");
+                return schema.contents.where(e => JSON.stringify(e).search(reg) > -1).models.map(e => {
+                    e.id = e._id;
+                    e._id = undefined;
+                    return e;
+                });
+            });
+
+            this.get("http://localhost:5000/doc/:id/versions", (schema, request) => {
+                let id = Number(request.params.id)
+                return schema.contents.where({ _id: id }).models.map(e => {
+                    e.id = e._id;
+                    e._id = undefined;
+                    return e;
+                });
+            });
+
+            this.get("http://localhost:5000/doc/:id/versions/:version", (schema, request) => {
+                let id = Number(request.params.id);
+                let version = Number(request.params.version);
+                let c = schema.contents.findBy({ _id: id, version: version });
+                c.id = c._id;
+                c._id = undefined;
+                return c.attrs;
             })
 
             this.passthrough("https://kit.fontawesome.com/*");
@@ -253,3 +331,75 @@ let content = [
     { "_id": 8, "version": 1, "owner_id": 0, "content_type": 6, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Industry": "Manufacturing", "At a Glance": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Picnics in the park are usually completed together with friends and " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://work-math-demo.herokuapp.com/#/docs/2", "target": "_blank" } }], "text": "family" }] }] }, "Banking": { "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Key considerations" }] }, { "type": "table", "content": [{ "type": "tableRow", "content": [{ "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Risk" }] }] }, { "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Consideration" }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Heat" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Can impact the food and spoil if not appropriately cooled." }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Weather" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Cities with weather that can rapidly change can pose a risk to picnics as it can impact the enjoyment of the outing. " }] }] }] }] }] }, "title": "Picnic" } },
     { "_id": 9, "version": 1, "owner_id": 0, "content_type": 2, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Industry": "Manufacturing", "Client Type": "Business Banking", "Security": "N/A", "Metrics": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "PD D2" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "LGD N" }] }] }, "title": "Picnics" } }
 ]
+
+/*
+
+let schemas = [
+
+]
+/*
+{
+    name: String,
+    version: 0,
+    fields: {
+        fieldName: {
+            type: block | blocks | resource | input | select | multipleSelect,
+
+        }
+    }
+}
+
+
+{
+
+}
+
+
+*/
+
+
+
+
+
+function parseOutLinks(document) {
+    let content = document.content;
+    let links = new Set();
+    if (content) {
+        let keys = Object.keys(content).filter(e => e.search(/title/gi) < 0);
+        keys.forEach(key => {
+            let root = content[key];
+            if (root instanceof Array) {
+                root.forEach(e => {
+                    links.add(...extractLinks(e))
+                })
+            } else {
+                links.add(...extractLinks(root))
+            }
+        })
+    }
+    return links;
+}
+
+function extractLinks(node) {
+    let links = [];
+    let marks = node.marks;
+    if (marks) {
+        marks.forEach(m => {
+            console.log(m);
+            if (m.type == "link") {
+                links.push(m.attrs.href);
+            }
+        });
+    }
+
+    let children = node.content;
+    if (children) {
+        children.forEach(c => {
+            links.push(...extractLinks(c));
+        });
+    }
+
+    return links
+}
+
+
