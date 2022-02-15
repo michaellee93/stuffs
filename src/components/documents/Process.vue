@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1 class="title">{{ document.content.title }}</h1>
+    <h1 class="title">{{ document.content.Title }}</h1>
     <div
       class="columns step"
       v-for="(step, i) in document.content.Steps"

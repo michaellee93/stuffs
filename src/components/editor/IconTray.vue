@@ -94,9 +94,9 @@
         </li>
       </ul>
     </div>
-    <button @click="clickButton('cond')" class="button">
+    <!--<button @click="clickButton('cond')" class="button">
       <i class="fas fa-code-branch" />
-    </button>
+    </button>-->
     <button v-show="showDelete" @click="deleteBlock" class="button is-danger">
       Delete Block
     </button>

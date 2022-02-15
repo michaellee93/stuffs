@@ -10,7 +10,7 @@
         <div class="columns">
           <div @click="selectItem(item)" class="column is-9">
             <p class="is-size-5">
-              {{ item.content.title || item.content.url || "New #" + item.id }}
+              {{ item.content.Title || item.content.url || "New #" + item.id }}
             </p>
             <p class="is-size-7">{{ preview(item) }}</p>
           </div>

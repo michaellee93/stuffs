@@ -480,13 +480,6 @@ export default {
     });
     this.title = this.document.content.title;
     this.owner = this.document.owner_id;
-
-    /*if (this.document.content_type == 7) {
-      this.rules = await http.get(
-        this.API_URL + "/doc/" + this.document_id + "/rules"
-      );
-      console.log("cs");
-    }*/
   },
 };
 </script>

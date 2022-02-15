@@ -1,7 +1,8 @@
 <template>
   <div>
     <dependency-view :document_id="this.document_id" />
-    <fake-it
+
+    <edit-view
       :document_id="this.document_id"
       :cancel="true"
       :save="true"
@@ -14,10 +15,10 @@
 <script>
 import http from "../http";
 import DependencyView from "./editor/DependencyView.vue";
-import FakeIt from "./FakeIt.vue";
+import EditView from "@/views/EditView";
 
 export default {
-  components: { DependencyView, FakeIt },
+  components: { DependencyView, EditView },
   props: {
     document_id: {},
   },

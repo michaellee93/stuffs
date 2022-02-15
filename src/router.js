@@ -1,20 +1,20 @@
 //import FakeIt from './components/FakeIt.vue'
 import contentView from '@/views/ContentView.vue'
-import searchView from './components/SearchView.vue'
+import searchView from './views/SearchView.vue'
 import draftsView from './components/DraftsView.vue'
 import documentView from './views/DocumentView.vue'
 import historyView from './components/HistoryView.vue'
-import createContent from './components/CreateContent.vue'
+//import createContent from './components/CreateContent.vue'
 import DraftView from './components/DraftView.vue'
 import VersionView from './views/VersionView.vue'
 import AdminView from './views/AdminView.vue'
-
-
+import SchemaView from './views/SchemaView.vue'
+import EditView from './views/EditView.vue'
 
 const routes = [
     // Other
     { path: '/search', component: searchView },
-    { path: '/create', component: createContent },
+    //    { path: '/create', component: createContent },
 
     // Content
     { path: '/definitions', component: contentView, props: () => ({ block_type: 'definition' }) },
@@ -34,6 +34,9 @@ const routes = [
     // Drafts
     { path: '/drafts', component: draftsView },
     { path: '/drafts/:document_id', component: DraftView, props: route => ({ document_id: route.params.document_id, cancel: true, save: true, publish: true }) },
+
+    { path: '/schemas', component: SchemaView },
+    { path: '/editing', component: EditView },
 
     { path: '/admin', component: AdminView }
 ];

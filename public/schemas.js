@@ -1,73 +1,210 @@
 window.schemas = [
     // Definition
     {
-        Title: { type: "input" },
-        Definition: { type: "block" },
+        name: "Definition",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Definition",
+                type: "block",
+                required: true,
+            },
+        ]
     },
     //ICS
     {
-        //ics
-        Title: { type: "input" },
-        Industry: {
-            type: "drop",
-            values: [
-                "Manufacturing",
-                "Retail",
-                "Wholesale",
-                "Agriculture",
-                "Construction",
-            ],
-        },
-        "Client Type": {
-            type: "drop",
-            values: ["Business Banking", "Institutional"],
-        },
-        Anzics: {
-            type: "tag",
-        },
-        Security: {
-            type: "drop",
-            values: ["Unsecured", "Secured", "N/A"],
-        },
-        Metrics: { type: "block" },
+        name: "Industry Credit Standard",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Industry",
+                type: "select",
+                values: [
+                    "Manufacturing",
+                    "Retail",
+                    "Wholesale",
+                    "Agriculture",
+                    "Construction",
+                ],
+                required: true,
+            },
+            {
+                name: "Client Type",
+                type: "select",
+                values: ["Business Banking", "Institutional"],
+                required: true,
+            },
+            {
+                name: "Anzics",
+                type: "multiselect",
+                required: true,
+            },
+            {
+                name: "Security",
+                type: "select",
+                values: ["Unsecured", "Secured", "N/A"],
+                required: true,
+            },
+            {
+                name: "Metrics",
+                type: "block",
+                required: true,
+            }
+        ],
     },
 
     // Process
     {
-        Title: { type: "input" },
-        Category: { type: "drop", values: ["Origination", "Maintenance"] },
-        Steps: { type: "blocks" },
+        name: "Process",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Category",
+                type: "select",
+                values: ["Origination", "Maintenance"],
+                required: true,
+            },
+            {
+                name: "Steps",
+                type: "blocks",
+                required: true,
+            }
+        ],
     },
     //URL
-    { URL: { type: "input" } },
+    {
+        name: "URL",
+        fields: [
+            {
+                name: "URL",
+                type: "text",
+                required: true,
+            }
+        ]//URL: { type: "input" } },
+    },
+
     //Product
     {
-        Title: { type: "input" },
-        "Product Family": {
-            type: "drop",
-            values: ["Cash Management", "Commercial Lending"],
-        },
-        Overview: { type: "block" },
-        Pricing: { type: "block" },
-        Technical: { type: "block" },
-        Processes: { type: "block" },
+        name: "Product",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Product Family",
+                type: "select",
+                values: ["Cash Management", "Commercial Lending"],
+                required: true,
+            },
+            {
+                name: "Overview",
+                type: "block",
+                required: true,
+            },
+            {
+                name: "Pricing",
+                type: "block",
+                required: true,
+            },
+            {
+                name: "Technical",
+                type: "block",
+                required: true,
+            },
+            {
+                name: "Processes",
+                type: "block",
+                required: true,
+            },
+        ]
     },
+
     //Guidance
     {
-        Title: { type: "input" },
-        Industry: {
-            type: "drop",
-            values: ["Manufacturing", "Retail"],
-        },
-        "At a Glance": { type: "block" },
-        Banking: { type: "block" },
+        name: "Guidance",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Industry",
+                type: "select",
+                values: ["Manufacturing", "Retail"],
+                required: true,
+            },
+            {
+                name: "At a Glance",
+                type: "block",
+                required: true,
+            },
+            {
+                name: "Banking",
+                type: "block",
+                required: true,
+            },
+        ],
     },
 
     // Credit standards
     {
-        Title: { type: "input" },
-        Standards: { type: "resource" },
-        Pathways: { type: "resource" },
-        Restrictions: { type: "resource" },
+        name: "Credit Standard",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Standards",
+                type: "data",
+                required: true,
+            },
+            {
+                name: "Pathways",
+                type: "data",
+                required: true,
+            },
+            {
+                name: "Restrictions",
+                type: "data",
+                required: true,
+            },
+        ]
     },
 ];
+
+
+
+/*
+
+Field = {
+    name: String
+    type: blocks | block | data | text | select | multiselect,
+    values: Array | String // only for select, multiselect, data - either literal values or a table name
+    required: Boolean,
+
+}
+
+
+Schema = {
+    name: String,
+    fields: [Field+]
+}
+
+*/

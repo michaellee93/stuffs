@@ -6,12 +6,19 @@
         <p class="menu-label">Menu</p>
         <ul class="menu-list">
           <li>
+            <a>Schemas</a>
             <a>Your approvals</a>
             <a>User roles</a>
           </li>
         </ul>
       </aside>
       <div class="column is-8">
+        <div class="block">
+          <h1 class="title is-6">Schemas</h1>
+          <router-link to="/schemas"
+            ><button class="button">Edit Schemas</button></router-link
+          >
+        </div>
         <div class="block">
           <h1 class="title is-6">Your Approvals</h1>
           <table class="table is-fullwidth">
