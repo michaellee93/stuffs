@@ -43,34 +43,39 @@ export function makeServer({ environment = "development" } = {}) {
                 let q = request.queryParams["block_type"];
                 var m = 0;
                 for (var i = 0; i < block_types.length; i++) {
-                    if (block_types[i].name.toLowerCase() == q) {
+                    if (block_types[i].name.toLowerCase().replaceAll(' ', "_") == q) {
                         m = block_types[i].id;
                         break;
                     }
                 }
 
                 let c = schema.contents.where(c => c.content_type == m && c.published_at !== "0001-01-01T00:00:00Z").models;
-                console.log(c);
-                var maxVersion = {};
-                c.forEach(e => {
-                    if (!maxVersion[e.attrs._id]) { maxVersion[e.attrs._id] = e.attrs.version; }
-                    if (e.attrs.version > maxVersion[e.attrs._id]) { maxVersion[e.attrs._id] = e.attrs.version }
-                })
-                console.log(maxVersion);
-                let curr = schema.contents.where(c => c.content_type == m && c.version == maxVersion[c._id]).models;
-                console.log(curr);
+
+                let curr = c.reduce((a, e) => {
+                    if (!a[e._id] || e.version > a[e._id]) {
+                        a[e._id] = e;
+                    }
+                    console.log(a);
+                    return a;
+                }, []).filter(e => e !== undefined)
                 return curr.map(e => { e.id = e._id; e._id = undefined; return e })
             });
 
             // get a document
             this.get("http://localhost:5000/doc/:id", (schema, request) => {
-                let id = request.params.id;
-                let docs = schema.contents.where({ _id: id }).models;
-                let maxv = docs.reduce((a, e) => e.version > a ? e.version : a, 1);
-                let c = schema.contents.findBy({ _id: id, version: maxv });
-                c.id = c._id;
-                c._id = undefined;
-                return c.attrs;
+                let id = Number(request.params.id);
+
+                let docs = schema.contents.where((c) => c._id == id && c.published_at !== "0001-01-01T00:00:00Z").models;
+                console.log(docs)
+                let current = docs.reduce((a, e) => {
+                    if (!a || e.version > a.version) return e
+                    return a
+                });
+                /*let maxv = docs.reduce((a, e) => e.version > a ? e.version : a, 1);
+                let c = schema.contents.findBy({ _id: id, version: maxv });*/
+                current.id = current._id;
+                current._id = undefined;
+                return current.attrs;
             });
 
             // publish draft
@@ -78,9 +83,9 @@ export function makeServer({ environment = "development" } = {}) {
                 // create doc
                 let id = Number(request.params.id);
                 let body = JSON.parse(request.requestBody)
-                body.published_at = new Date().toISOString();
+                let now = new Date().toISOString();
 
-                // links
+                links
                 let links = parseOutLinks(body);
                 let linksAdd = [];
                 let max = schema.contents.all().models.reduce((a, e) => {
@@ -107,7 +112,14 @@ export function makeServer({ environment = "development" } = {}) {
                             } else {
                                 // it doesnt
                                 max++;
-                                let newc = schema.contents.create({ _id: max, content: { URL: e }, version: 1, published_at: new Date().toISOString(), content_type: 4, owner_id: 0 });
+                                let newc = schema.contents.create(
+                                    {
+                                        _id: max, content: { URL: e },
+                                        version: 1,
+                                        published_at: new Date().toISOString(),
+                                        content_type: 4,
+                                        owner_id: 0
+                                    });
                                 linksAdd.push(newc._id);
                             }
                         }
@@ -122,7 +134,11 @@ export function makeServer({ environment = "development" } = {}) {
                     schema.links.create({ outcontent: id, incontent: l, created_at: new Date().toISOString() })
                 });
 
-                let c = schema.contents.findBy(c => c._id === Number(id) && c.published_at === "0001-01-01T00:00:00Z")
+
+                let c = schema.contents.findBy(c => c._id === Number(id) && c.version === body.version)
+                c.update('published_at', now);
+                c.update('content', body.content);
+                c.update('content_type', body.content_type)
                 c.update(body);
                 return c.attrs
             });
@@ -140,17 +156,22 @@ export function makeServer({ environment = "development" } = {}) {
                     return draft.attrs
                 }
 
-                let cont = schema.contents.where((c) => c._id === id).models;
+                let cont = schema.contents.where((c) => c._id === id).models/*.reduce((a, e) => {
+                    if (!a || e.version > a.version) return e;
+                    return a;
+                });*/
+
                 let maxv = cont.reduce((a, e) => {
                     if (e.version > a) {
                         return e.version;
                     }
                     return a;
                 }, 1);
+
                 //here
                 let currentVersion = schema.contents.findBy(c => c._id === id && c.version === maxv)
-                currentVersion.attrs['published_at'] = "0001-01-01T00:00:00Z"
-                currentVersion.attrs['created_at'] = new Date().toISOString();
+                currentVersion.published_at = "0001-01-01T00:00:00Z"
+                currentVersion.created_at = new Date().toISOString();
                 currentVersion.version = maxv + 1;
 
                 currentVersion.id = undefined;
@@ -218,29 +239,37 @@ export function makeServer({ environment = "development" } = {}) {
                 schema.links.where({ incontent: id }).models.forEach(e => {
                     set.add(e.outcontent);
                 });
-                let c = schema.contents.where(e => set.has(e._id)).models.map(e => {
+                let c = schema.contents.where(e => set.has(e._id)).models.reduce((a, e) => {
+                    if (!a[e._id] || e.version > a[e._id]) {
+                        a[e._id] = e;
+                    }
+                    return a
+                }, []).filter(e => e !== undefined);
+
+                return c.map(e => {
                     e.id = e._id;
                     e._id = undefined;
                     return e;
                 })
-                return c;
             });
 
             this.get("http://localhost:5000/titles", (schema) => {
                 let c = schema.contents.where(c => c.content_type == 1 && c.published_at !== "0001-01-01T00:00:00Z").models;
-                var maxVersion = {};
-                c.forEach(e => {
-                    if (!maxVersion[e.attrs._id]) { maxVersion[e.attrs._id] = e.attrs.version; }
-                    if (e.attrs.version > maxVersion[e.attrs._id]) { maxVersion[e.attrs._id] = e.attrs.version }
-                })
-                let defs = schema.contents.where(c => c.content_type == 1 && c.version == maxVersion[c._id]).models
+
+                let defs = c.reduce((a, e) => {
+                    if (!a[e._id] || e.version > a[e._id]) {
+                        a[e._id] = e;
+                    }
+                    return a;
+                }, []).filter(e => e !== undefined)
+
                 let out = {};
                 defs.forEach(e => {
-                    out[e.content.title.toLowerCase()] = e._id;
+                    out[e.content.Title.toLowerCase()] = e._id;
                 })
                 return out;
 
-            })
+            });
 
             this.get("http://localhost:5000/search", (schema, request) => {
                 let query = request.queryParams.q;
@@ -272,7 +301,7 @@ export function makeServer({ environment = "development" } = {}) {
                 c.id = c._id;
                 c._id = undefined;
                 return c.attrs;
-            })
+            });
 
             this.passthrough("https://kit.fontawesome.com/*");
             this.passthrough("https://ka-f.fontawesome.com/*")
@@ -281,6 +310,12 @@ export function makeServer({ environment = "development" } = {}) {
     return server
 }
 
+let block_types = window.schemas.map((e, i) => ({
+    id: i + 1,
+    name: e.name,
+    description: "",
+}));
+/*
 let block_types = [
     {
         "id": 1,
@@ -289,7 +324,7 @@ let block_types = [
     },
     {
         "id": 2,
-        "name": "ICS",
+        "name": "Industry Credit Standard",
         "description": ""
     },
     {
@@ -314,52 +349,26 @@ let block_types = [
     },
     {
         "id": 7,
-        "name": "Standard",
+        "name": "Credit Standard",
         "description": ""
     }
 ];
-
+*/
 let blidx = [];
 block_types.forEach(e => blidx[e.id] = e.name.toLowerCase());
 
-let content = [
+/*let content = [
     { "_id": 1, "version": 1, "owner_id": 0, "content_type": 1, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Definition": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Approval from the wife required" }] }] }, "Title": "Level 2" } },
     { "_id": 2, "version": 1, "owner_id": 0, "content_type": 1, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Definition": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Any relation through blood or law" }] }] }, "Title": "Family" } },
     { "_id": 3, "version": 1, "owner_id": 0, "content_type": 7, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "name": "", "Title": "Baking a Cake", "Standards": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Rise must be 8cm from top to bottom" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Temperature inside the cake must have reached 150C" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Circular Tin only" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Plastic (Microwave only) or Aluminium" }] }] }], "Pathways": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Size: \u003c10cm" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Audience: " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://work-math-demo.herokuapp.com/#/doc/2", "target": "_blank" } }], "text": "Family" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Ingredients: Any" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Total Cost: \u003c$50" }] }] }], "Restrictions": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Microwave: Level 1" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Oven: " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://work-math-demo.herokuapp.com/#/doc/2", "target": "_blank" } }], "text": "Level 2" }] }] }] } },
     { "_id": 6, "version": 1, "owner_id": 0, "content_type": 3, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Category": "Origination", "Steps": [{ "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 3 }, "content": [{ "type": "text", "text": "Set the timer" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Begin by setting the timer to 10 minutes" }] }] }, { "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 3 }, "content": [{ "type": "text", "text": "Set the power" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Ensure power on the microwave is set to 500W to avoid burning" }] }] }], "Title": "Heat in microwave" } },
     { "_id": 7, "version": 1, "owner_id": 0, "content_type": 5, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Product Family": "Commercial Lending", "Overview": { "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Product overview" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Packet cake mix helps speed up the process of baking the cake." }] }, { "type": "paragraph" }, { "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Eligibility" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Can be used by people baking in the home." }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Not permitted for restaurants." }] }, { "type": "paragraph" }, { "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Varying options" }] }, { "type": "bulletList", "content": [{ "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Betty Crocker" }] }] }, { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Nestle" }] }] }, { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Greens" }] }] }] }] }, "Pricing": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Packet Pricing" }] }, { "type": "table", "content": [{ "type": "tableRow", "content": [{ "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Brand" }] }] }, { "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Cost" }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Betty Crocker" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "$4.99" }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Nestle" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "$7.00" }] }] }] }] }] }, "Technical": { "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Instructions" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "Instructions included on the box" }] }] }, "Title": "Cake Mix" } },
     { "_id": 8, "version": 1, "owner_id": 0, "content_type": 6, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Industry": "Manufacturing", "At a Glance": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Picnics in the park are usually completed together with friends and " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://work-math-demo.herokuapp.com/#/docs/2", "target": "_blank" } }], "text": "family" }] }] }, "Banking": { "type": "doc", "content": [{ "type": "heading", "attrs": { "level": 4 }, "content": [{ "type": "text", "text": "Key considerations" }] }, { "type": "table", "content": [{ "type": "tableRow", "content": [{ "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Risk" }] }] }, { "type": "tableHeader", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Consideration" }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Heat" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Can impact the food and spoil if not appropriately cooled." }] }] }] }, { "type": "tableRow", "content": [{ "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Weather" }] }] }, { "type": "tableCell", "attrs": { "colspan": 1, "rowspan": 1, "colwidth": null }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Cities with weather that can rapidly change can pose a risk to picnics as it can impact the enjoyment of the outing. " }] }] }] }] }] }, "Title": "Picnic" } },
-    { "_id": 9, "version": 1, "owner_id": 0, "content_type": 2, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Industry": "Manufacturing", "Client Type": "Business Banking", "Security": "N/A", "Metrics": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "PD D2" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "LGD N" }] }] }, "Title": "Picnics" } }
-]
+    { "_id": 9, "version": 1, "owner_id": 0, "content_type": 2, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "draft": true, "content": { "Industry": "Manufacturing", "Client Type": "Business Banking", "Security": "N/A", "Metrics": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "PD D2" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "LGD N" }] }] }, "Title": "Picnics" } },
+    { "_id": 10, "version": 1, "owner_id": 0, "content_type": 8, "created_at": "2022-02-07T12:14:07.700969Z", "published_at": "2022-02-07T12:14:07.700969Z", "content": { "Title": "Michael", "Bobble": [{ "type": "doc" }] } }
+]*/
 
-/*
-
-let schemas = [
-
-]
-/*
-{
-    name: String,
-    version: 0,
-    fields: {
-        fieldName: {
-            type: block | blocks | resource | input | select | multipleSelect,
-
-        }
-    }
-}
-
-
-{
-
-}
-
-
-*/
-
-
-
-
+let content = window.baselineContent;
 
 function parseOutLinks(document) {
     let content = document.content;
@@ -403,3 +412,4 @@ function extractLinks(node) {
 }
 
 
+parseOutLinks({})

@@ -21,11 +21,13 @@
 
     <section class="block">
       <div
+        :class="{ 'over-field': i == overField && field.name !== 'Title' }"
         class="field schema-field"
         style="display: flex; align-items: center; justify-content: center"
         :draggable="field.name !== 'Title'"
         @dragenter.prevent
-        @dragover.prevent
+        @dragover.prevent="setOver(i)"
+        @dragend="clearOver"
         @dragstart="startDrag($event, i)"
         @drop="onDrop($event, i)"
         v-for="(field, i) in selectedSchema.fields"
@@ -200,32 +202,55 @@ export default {
       fieldTypes: ["text", "block", "blocks", "select", "multiselect", "data"],
       unlocked: [],
       saved: null,
+      overField: null,
     };
   },
   methods: {
+    setOver(idx) {
+      this.overField = idx;
+    },
+    clearOver() {
+      this.overField = -1;
+    },
     createSchema() {
       let fields = this.schemaHasTitle
         ? [{ name: "Title", type: "text", required: true }]
         : [];
+      this.closeModal(1);
+      //      let idx = this.schems.length - 1;
       this.schems.push({
         name: this.schemaName,
         fields,
       });
-      this.closeModal(1);
+      // window.schemas.push({
+      //   name: this.schemaName,
+      //   fields,
+      // });
+
+      this.unlocked.push([false]);
+
+      //      this.schems = window.schemas;
+      this.schemaName = "";
+      this.selected = this.schems.length - 1;
     },
     activateModal(idx) {
       this.$set(this.showModal, idx, true);
     },
     selectValues(field) {
-      this.showModal[0] = true;
+      this.$set(this.showModal, 0, true);
+      //      this.showModal[0] = true;
       this.selectedField = field;
-      this.selectedValues = Array.from(field.values);
+      this.selectedValues = Array.from(field.values || []);
       this.valueCheckboxes = this.selectedValues.map(() => false);
     },
     addValue() {
       if (this.validValue) {
-        this.selectedValues.push(this.newValue);
-        this.valueCheckboxes.push(false);
+        this.$set(
+          this.selectedValues,
+          this.selectedValues.length,
+          this.newValue
+        );
+        this.$set(this.valueCheckboxes, this.valueCheckboxes.length, false);
         this.newValue = "";
       }
     },
@@ -239,8 +264,8 @@ export default {
       this.valueCheckboxes = this.selectedValues.map(() => false);
     },
     saveValues() {
-      this.showModal[0] = false;
-      this.selectedField.values = this.selectedField;
+      this.$set(this.showModal, 0, false);
+      this.selectedField.values = this.selectedValues;
       this.selectedField = null;
     },
     closeModal(idx) {
@@ -259,14 +284,13 @@ export default {
     },
     onDrop(event, targetIndex) {
       let fields = this.schems[this.selected].fields;
-      if (fields[targetIndex].name === "Title") {
-        return;
-      }
+      if (fields[targetIndex].name === "Title") return;
       let currentIndex = event.dataTransfer.getData("selectedIndex");
-      let field = fields.splice(currentIndex, 1)[0];
+      if (currentIndex === targetIndex) return;
 
+      let field = fields.splice(currentIndex, 1)[0];
       console.log("moving to ", targetIndex, currentIndex);
-      if (targetIndex - currentIndex > 1) {
+      if (targetIndex - currentIndex > 0) {
         targetIndex--;
       }
 
@@ -280,7 +304,7 @@ export default {
       let unlfr = unlocks.slice(0, targetIndex);
       let unlbk = unlocks.slice(targetIndex);
       unlfr.push(unlocked, ...unlbk);
-      this.unlocked = unlfr;
+      this.unlocked[this.selected] = unlfr;
     },
     startDrag(event, idx) {
       event.dataTransfer.dropEffect = "move";
@@ -294,7 +318,12 @@ export default {
         required: false,
       });
 
-      this.unlocked[this.selected].push(true);
+      this.$set(
+        this.unlocked[this.selected],
+        this.unlocked[this.selected].length,
+        true
+      );
+      //      this.unlocked[this.selected].push(true);
     },
   },
   computed: {
@@ -336,6 +365,11 @@ export default {
   border: 2px solid #dfdfdf;
   border-radius: 5px;
   padding: 8px;
+}
+
+.schema-field.over-field {
+  margin-top: 2rem;
+  background-color: #eee;
 }
 
 .invis {

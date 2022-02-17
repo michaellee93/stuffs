@@ -1,9 +1,10 @@
 <template>
   <div>
     <p style="padding-bottom: 8px">
-      <strong>{{ capitalise(block_type) }}</strong>
+      <strong>{{ title || capitalise(block_type) }}</strong>
     </p>
     <list
+      :loading="loading"
       :current_user="current_user"
       @selected="selectItem"
       :items="docs"
@@ -16,21 +17,25 @@ import http from "../http";
 import List from "@/components/List.vue";
 
 export default {
-  props: ["block_type", "current_user"],
+  props: ["block_type", "current_user", "title", "content_type"],
   data() {
     return {
       docs: {},
       reload: false,
+      loading: false,
     };
   },
   methods: {
     async getDocs() {
+      this.loading = true;
       try {
         this.docs = await http.get(
           this.API_URL + "/docs?" + "block_type=" + encodeURI(this.block_type)
         );
       } catch {
         this.docs = [];
+      } finally {
+        this.loading = false;
       }
     },
     selectItem(item) {

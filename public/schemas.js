@@ -45,6 +45,17 @@ window.schemas = [
             {
                 name: "Anzics",
                 type: "multiselect",
+                values: [
+                    "011 — Nursery and Floriculture Production",
+                    "012 — Mushroom and Vegetable Growing",
+                    "013 — Fruit Tree and Nut Growing",
+                    "014 — Sheep, Beef Cattle and Grain Farming",
+                    "015 — Other Crop Growing",
+                    "016 — Dairy Cattle Farming",
+                    "017 — Poultry Farming",
+                    "018 — Deer Farming",
+                    "019 — Other Livestock Farming",
+                ],
                 required: true,
             },
             {
@@ -83,6 +94,7 @@ window.schemas = [
             }
         ],
     },
+
     //URL
     {
         name: "URL",
@@ -92,7 +104,7 @@ window.schemas = [
                 type: "text",
                 required: true,
             }
-        ]//URL: { type: "input" } },
+        ]
     },
 
     //Product
@@ -187,6 +199,7 @@ window.schemas = [
             },
         ]
     },
+
 ];
 
 

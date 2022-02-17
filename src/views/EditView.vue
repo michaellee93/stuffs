@@ -127,17 +127,10 @@
           </div>
 
           <div v-else-if="field.type === 'multiselect'">
-            <div class="field is-grouped is-grouped-multiline">
-              <div v-for="(v, j) in forms[field.name]" :key="j" class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-info">{{ v }}</span>
-                  <a @click="removeTag(j)" class="tag is-delete" />
-                </div>
-              </div>
-            </div>
-            <div>
-              <input class="input" />
-            </div>
+            <multi-select
+              :selected.sync="forms[content_type][field.name]"
+              :values="field.values"
+            />
           </div>
 
           <div v-else-if="field.type == 'data'">
@@ -189,9 +182,10 @@
 <script>
 import http from "@/http.js";
 import NewEditor from "@/components/editor/NewEditor.vue";
+import MultiSelect from "@/components/MultiSelect.vue";
 
 export default {
-  components: { NewEditor },
+  components: { NewEditor, MultiSelect },
   props: {
     cancel: {},
     create: { default: false },
@@ -254,7 +248,8 @@ export default {
     },
     setForm(document) {
       Object.keys(document.content).forEach((key) => {
-        this.forms[this.content_type][key] = document.content[key];
+        this.$set(this.forms[this.content_type], key, document.content[key]);
+        // this.forms[this.content_type][key] = document.content[key];
       });
     },
     alphatise(number) {
@@ -280,7 +275,13 @@ export default {
       this.forms[this.content_type][key].splice(index, 1);
     },
     grabContent() {
-      return this.forms[this.content_type];
+      return {
+        id: this.document_id,
+        version: this.document.version,
+        content_type: this.content_type + 1,
+        owner_id: this.owner,
+        content: this.forms[this.content_type],
+      };
     },
     async saveDocument() {
       try {
@@ -324,12 +325,7 @@ export default {
     this.content_type = this.document.content_type - 1;
 
     this.createRefs(this.schemas);
-    setTimeout(
-      function () {
-        this.setForm(this.document);
-      }.bind(this),
-      2000
-    );
+    this.setForm(this.document);
 
     this.owner = this.document.owner_id;
   },

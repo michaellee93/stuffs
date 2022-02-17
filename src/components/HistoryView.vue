@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="is-size-3" style="padding-bottom: 8px">
-      Version history for: <strong>{{ title }}</strong>
+      Version history for: <strong>{{ Title }}</strong>
     </h2>
     <p class="is-size-6 block">{{ docs.length }} versions</p>
     <div class="block">
@@ -11,7 +11,7 @@
     <list v-if="docs.length > 0" @selected="selectItem" :items="docs">
       <template v-slot:item="slotProps">
         <div @click="selectItem(slotProps.item)">
-          <p class="is-size-5">{{ slotProps.item.content.title || "" }}</p>
+          <p class="is-size-5">{{ slotProps.item.content.Title || "" }}</p>
           <!--<p class="is-size-6">Published at: {{ slotProps.item.published_at }}</p>-->
           <p class="is-size-7">
             <em
@@ -55,8 +55,8 @@ export default {
         this.docs = await http.get(
           this.API_URL + `/doc/${this.document_id}/versions`
         );
-        if (this.docs.length > 0 && this.title == "") {
-          this.title = this.docs[0].title;
+        if (this.docs.length > 0 && this.Title == "") {
+          this.title = this.docs[0].Title;
         }
       } catch {
         this.docs = [];

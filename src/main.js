@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
-import routes from './router'
+import { routes } from '@/router'
 import { makeServer } from './server'
 
 Vue.config.productionTip = false

@@ -9,6 +9,23 @@
         <p>{{ document.content[field.name] }}</p>
       </div>
 
+      <div v-else-if="field.type === 'select'">
+        <p class="subtitle is-4">
+          <b>{{ field.name }}:</b> {{ document.content[field.name] }}
+        </p>
+      </div>
+
+      <div v-else-if="field.type === 'multiselect'">
+        <h3>{{ field.name }}</h3>
+        <div class="tags are-medium">
+          <span
+            :key="j"
+            v-for="(tag, j) in document.content[field.name]"
+            class="tag"
+            >{{ tag }}</span
+          >
+        </div>
+      </div>
       <div v-else-if="field.type === 'block'">
         <h3>{{ field.name }}</h3>
         <new-editor
@@ -37,11 +54,15 @@
         </div>
         <div v-else>
           <h3>{{ field.name }}</h3>
-          <div v-for="(block, j) in document.content[field.name]" :key="j">
+          <div
+            class="block"
+            v-for="(block, j) in document.content[field.name]"
+            :key="j"
+          >
             <new-editor
               style="padding-left: 20px"
               :editable="false"
-              :content="document.content[field.name]"
+              :content="block"
             />
           </div>
         </div>
@@ -98,6 +119,13 @@ export default {
     },
     content_types() {
       return this.schemas.length > 0 ? this.schemas.map((e) => e.name) : null;
+    },
+  },
+  watch: {
+    document: function (to) {
+      if (to.content_type === 4) {
+        window.location.href = to.content.URL;
+      }
     },
   },
   created() {

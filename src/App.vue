@@ -63,22 +63,14 @@
 
 <script>
 import http from "@/http";
-
+import { contentRoutes } from "./router.js";
 export default {
   name: "App",
   data() {
     return {
       currentSection: -1,
       allTabs: [
-        { path: "/definitions", name: "Definition" },
-        { path: "/links", name: "Links" },
-        { path: "/standards", name: "Standards" },
-        { path: "/processes", name: "Processes" },
-        { path: "/product", name: "Product" },
-        { path: "/guidance", name: "Guidance" },
-        //        { path: "/reporting", name: "Reporting" },
-        { path: "/ics", name: "ICS" },
-        // { name: "Create", path: "/create" },
+        ...contentRoutes,
         { name: "Search", path: "/search" },
         { name: "Your drafts", path: "/drafts" },
         { name: "Admin", path: "/admin" },
