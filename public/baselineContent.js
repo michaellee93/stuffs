@@ -38,7 +38,7 @@ window.baselineContent = [
             "Title": "Baking a Cake",
             "Standards": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Rise must be 8cm from top to bottom" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Temperature inside the cake must have reached 150C" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Circular Tin only" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Plastic (Microwave only) or Aluminium" }] }] }],
             "Pathways": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Size: \u003c10cm" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Audience: " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "/#/doc/2", "target": "_blank" } }], "text": "Family" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Ingredients: Any" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Total Cost: \u003c$50" }] }] }],
-            "Restrictions": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Microwave: Level 1" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Oven: " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "/#/doc/2", "target": "_blank" } }], "text": "Level 2" }] }] }]
+            "Restrictions": [{ "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Microwave: Level 1" }] }] }, { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Oven: " }, { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "/#/doc/2", "target": "_blank" } }], "text": "Level 2" }] }] }],
         }
     },
     {
@@ -99,7 +99,8 @@ window.baselineContent = [
             "Client Type": "Business Banking",
             "Security": "N/A",
             "Metrics": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "PD D2" }] }, { "type": "paragraph", "content": [{ "type": "text", "text": "LGD N" }] }] },
-            "Title": "Picnics"
+            "Title": "Picnics",
+            "Anzics": ["011 — Nursery and Floriculture Production", "019 — Other Livestock Farming"]
         }
     },
     {
@@ -110,5 +111,29 @@ window.baselineContent = [
         "created_at": "2022-02-07T12:14:07.700969Z",
         "published_at": "2022-02-07T12:14:07.700969Z",
         "content": { "URL": "https://www.google.com" }
-    }
+    },
+{
+        "_id": 11,
+        "version": 1,
+        "owner_id": 0,
+        "content_type": 8,
+        "created_at": "2022-02-07T12:14:07.700969Z",
+        "published_at": "2022-02-07T12:14:07.700969Z",
+        "content": { 
+						"Title": "TODO: title",
+         		"Purpose": [ {"type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Purpose" }] } ]} ],
+ 						"Accountabilities": [ {"type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Accountabilities" }] } ]} ],
+						"Compliance Statement": [ {"type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Compliance Statement" }] } ]} ],
+						"Breach of Policy": [ {"type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Breach of Policy" }] } ]} ],
+						"Definitions": ["Definition One"],
+				}
+    },
+]
+
+
+
+window.baselineLinks = [
+    { outcontent: 8, incontent: 2 },
+    { outcontent: 3, incontent: 2 },
+    { outcontent: 3, incontent: 1 },
 ]

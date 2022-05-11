@@ -200,6 +200,39 @@ window.schemas = [
         ]
     },
 
+    // Policy
+    {
+        name: "Policy",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Purpose",
+                type: "blocks",
+            },
+            {
+                name: "Accountabilities",
+                type: "blocks",
+            },
+            {
+                name: "Compliance Statement",
+                type: "blocks",
+            },
+            {
+                name: "Breach of Policy",
+                type: "blocks",
+            },
+            {
+                name: "Definitions",
+                type: "multiselect",
+                values: ["Def1", "Def2"]
+            },
+
+        ]
+    }
 ];
 
 

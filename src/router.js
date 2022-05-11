@@ -10,6 +10,7 @@ import VersionView from './views/VersionView.vue'
 import AdminView from './views/AdminView.vue'
 import SchemaView from './views/SchemaView.vue'
 import EditView from './views/EditView.vue'
+import ReportView from './views/ReportView.vue'
 
 
 export var contentRoutes = window.schemas.map((e, i) => {
@@ -30,15 +31,8 @@ export const routes = [
     //    { path: '/create', component: createContent },
     ...contentRoutes,
 
-    // Content
-    /*{ path: '/definitions', component: ContentView, props: () => ({ block_type: 'definition' }) },
-    { path: '/links', component: ContentView, props: () => ({ block_type: 'url' }) },
-    { path: '/standards', component: ContentView, props: () => ({ block_type: 'standard' }) },
-    { path: '/processes', component: ContentView, props: () => ({ block_type: 'process' }) },
-    { path: '/product', component: ContentView, props: () => ({ block_type: 'product' }) },
-    { path: '/guidance', component: ContentView, props: () => ({ block_type: 'guidance' }) },
-    { path: '/reporting', component: ContentView, props: () => ({ block_type: 'reporting' }) },
-    { path: '/ics', component: ContentView, props: () => ({ block_type: 'ics' }) },*/
+    // Report
+    { path: '/reports', component: ReportView },
 
     // Documents
     { path: '/docs/:document_id', component: documentView, props: route => ({ document_id: route.params.document_id }) },
