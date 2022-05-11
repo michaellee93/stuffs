@@ -1,4 +1,5 @@
 <template>
+
 	<div id="app" class="column is-12">
 		<header class="columns">
 			<div class="column is-9">
