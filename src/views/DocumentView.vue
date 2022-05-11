@@ -13,7 +13,11 @@
     <div class="column columns">
       <div class="column is-10">
         <!-- document view for each type -->
-        <definition v-if="document.content_type == 1" :document="document" />
+        <dyndoc v-if="true" :document="document" />
+        <definition
+          v-else-if="document.content_type == 1"
+          :document="document"
+        />
         <i-c-s v-else-if="document.content_type == 2" :document="document" />
         <process v-else-if="document.content_type == 3" :document="document" />
 
@@ -39,6 +43,7 @@ import CreditStandard from "../components/documents/CreditStandard.vue";
 import Guidance from "../components/documents/Guidance.vue";
 import Product from "../components/documents/Product.vue";
 import ICS from "../components/documents/ICS.vue";
+import Dyndoc from "../components/documents/Document.vue";
 
 export default {
   name: "DocumentView",
@@ -98,6 +103,7 @@ export default {
     Guidance,
     Product,
     ICS,
+    Dyndoc,
   },
 };
 </script>

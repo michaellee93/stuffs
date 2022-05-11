@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="title">{{ document.content.title }}</h1>
+    <h1 class="title">{{ document.content.Title }}</h1>
     <new-editor :editable="false" :content="document.content.Definition" />
   </div>
 </template>

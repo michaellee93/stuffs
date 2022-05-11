@@ -19,6 +19,7 @@
       </select>
     </div>
     <input
+      v-show="submit"
       class="button"
       :class="{ 'is-success': allowSubmit }"
       @click="submitDate"
@@ -29,6 +30,12 @@
 
 <script>
 export default {
+  props: {
+    submit: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       day: null,
@@ -42,6 +49,7 @@ export default {
       return this.day !== null && this.month !== null && this.year !== null;
     },
   },
+
   watch: {
     month() {
       if (this.month == 2) {

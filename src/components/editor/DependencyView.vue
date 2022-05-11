@@ -37,7 +37,7 @@
           </p>
           <div v-for="(d, i) in dependencies" :key="i" class="block">
             <p class="subtitle">
-              <a @click="handleSelect(d.id)">{{ d.content.title }}</a>
+              <a @click="handleSelect(d.id)">{{ d.content.Title }}</a>
             </p>
           </div>
         </div>

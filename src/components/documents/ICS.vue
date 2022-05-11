@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <h4 class="title is-5">Product</h4>
-    <h1 class="title">{{ document.content.title }}</h1>
+    <h1 class="title">{{ document.content.Title }}</h1>
     <hr />
     <p><b>Industry: </b>{{ document.content.Industry }}</p>
     <p><b>Client Type: </b>{{ document.content["Client Type"] }}</p>

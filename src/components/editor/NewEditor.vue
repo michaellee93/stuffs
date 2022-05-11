@@ -7,6 +7,8 @@
       :link-active="linkActive"
       :bold-active="boldActive"
       :italic-active="italicActive"
+      :show-delete="showDelete"
+      @delete="deleteBlock"
     />
     <editor-content :class="{ 'editor-content': editable }" :editor="editor" />
   </div>
@@ -99,6 +101,7 @@ export default {
     },
     editorText: {},
     document_id: {},
+    showDelete: {},
   },
   data() {
     return {
@@ -159,7 +162,6 @@ export default {
       }
       this.$emit("update:editorText", this.editor.getText());
     },
-
     handleLink(args) {
       if (args) {
         this.editor.chain().focus().toggleLink({ href: args.href }).run();
@@ -208,6 +210,9 @@ export default {
           this.editor.chain().focus().insertConditional().run();
           break;
       }
+    },
+    deleteBlock() {
+      this.$emit("delete");
     },
   },
 

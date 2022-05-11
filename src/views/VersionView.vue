@@ -12,7 +12,8 @@
     <div class="column columns">
       <div class="column is-10">
         <!-- document view for each type -->
-        <process v-if="document.content_type == 3" :document="document" />
+        <dyndoc :document="document" />
+        <!-- <process v-if="document.content_type == 3" :document="document" />
         <definition
           v-else-if="document.content_type == 1"
           :document="document"
@@ -20,7 +21,7 @@
         <credit-standard
           v-else-if="document.content_type == 7"
           :document="document"
-        />
+        />-->
       </div>
       <reco-view :document_id="document_id" />
     </div>
@@ -30,10 +31,10 @@
 <script>
 import http from "../http";
 import RecoView from "@/components/RecoView.vue";
-import Process from "@/components/documents/Process.vue";
-import Definition from "../components/documents/Definition.vue";
-import CreditStandard from "../components/documents/CreditStandard.vue";
-
+// import Process from "@/components/documents/Process.vue";
+// import Definition from "../components/documents/Definition.vue";
+// import CreditStandard from "../components/documents/CreditStandard.vue";
+import Dyndoc from "../components/documents/Document.vue";
 export default {
   name: "DocumentView",
   props: {
@@ -91,7 +92,7 @@ export default {
       }
     }
   },
-  components: { RecoView, Process, Definition, CreditStandard },
+  components: { RecoView, /*Process, Definition, CreditStandard,*/ Dyndoc },
 };
 </script>
 

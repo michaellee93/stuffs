@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4 class="title is-5">Credit Standard</h4>
-    <h1 class="title">{{ document.content.title }}</h1>
+    <h1 class="title">{{ document.content.Title }}</h1>
     <hr />
     <div class="block content">
       <h3>Standards</h3>

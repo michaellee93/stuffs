@@ -7,9 +7,15 @@
       class="input"
       v-model.trim="query"
     />
-    <list v-if="results.length > 0" @selected="goToItem" :items="results">
+    <list
+      v-if="results.length > 0 && query.length > 0"
+      @selected="goToItem"
+      :items="results"
+    >
       <template v-slot:item="slotProps">
-        <p class="is-size-6">{{ slotProps.item.content.title }}</p>
+        <p @click="goToItem(slotProps.item)" class="is-size-6">
+          {{ slotProps.item.content.Title }}
+        </p>
         <p class="is-size-7">
           {{ content_types[slotProps.item.content_type - 1] }}
         </p>
@@ -21,7 +27,7 @@
 </template>
 
 <script>
-import List from "./List.vue";
+import List from "@/components/List.vue";
 
 export default {
   data: () => {
@@ -58,8 +64,7 @@ export default {
   watch: {
     query() {
       if (this.timeout == null) {
-        this.search();
-        this.timeout = setTimeout(() => {}, 200);
+        this.timeout = setTimeout(this.search, 200);
       } else {
         clearTimeout(this.timeout);
         this.timeout = setTimeout(this.search, 200);

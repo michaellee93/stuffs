@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <h4 class="title is-5">Guidance</h4>
-    <h1 class="title">{{ document.content.title }}</h1>
+    <h1 class="title">{{ document.content.Title }}</h1>
     <hr />
     <h2>At a Glance</h2>
     <new-editor

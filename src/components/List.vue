@@ -7,10 +7,15 @@
       :key="i"
     >
       <slot name="item" v-bind:item="item">
-        <div class="columns">
+        <div v-if="loading">
+          <div class="skele"></div>
+          <div class="skele"></div>
+          <div class="skele"></div>
+        </div>
+        <div v-else class="columns">
           <div @click="selectItem(item)" class="column is-9">
             <p class="is-size-5">
-              {{ item.content.title || item.content.url || "New #" + item.id }}
+              {{ item.content.Title || item.content.URL || "New #" + item.id }}
             </p>
             <p class="is-size-7">{{ preview(item) }}</p>
           </div>
@@ -38,6 +43,9 @@ export default {
       required: true,
     },
     current_user: {},
+    loading: {
+      default: false,
+    },
   },
   methods: {
     selectItem(item) {
@@ -66,4 +74,26 @@ export default {
 </script>
 
 <style>
+.skele {
+  height: 3rem;
+  width: 70%;
+  animation: wobble 2s infinite;
+  border-radius: 4px;
+}
+
+.skele:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+@keyframes wobble {
+  0% {
+    background: #eee;
+  }
+  50% {
+    background: #ddd;
+  }
+  100% {
+    background: #eee;
+  }
+}
 </style>
