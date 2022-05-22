@@ -35,7 +35,8 @@
 					<div class="dropdown-menu" id="dropdown-menu" role="menu">
 						<div class="dropdown-content">
 							<a href="#" class="dropdown-item">Profile</a>
-							<router-link to="/easy" class="dropdown-item">Easy</router-link>
+							<router-link to="/easy" class="dropdown-item">Content</router-link>
+							<router-link to="/easysch" class="dropdown-item">Schemas</router-link>
 							<a @click="resetApp" class="dropdown-item">Reset App</a>
 							<hr class="dropdown-divider" />
 							<a @click="

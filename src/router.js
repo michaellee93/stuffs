@@ -12,6 +12,7 @@ import SchemaView from './views/SchemaView.vue'
 import EditView from './views/EditView.vue'
 import ReportView from './views/ReportView.vue'
 import EasyView from './views/EasyView.vue'
+import EasySchemaView from './views/EasySchemaView.vue'
 
 export var contentRoutes = window.schemas.map((e, i) => {
     let urlName = e.name.toLowerCase().replaceAll(' ', '_')
@@ -49,7 +50,8 @@ export const routes = [
 
     { path: '/admin', component: AdminView },
 
-	{path:'/easy', component:EasyView}
+	{path:'/easy', component:EasyView},
+	{path:'/easysch', component:EasySchemaView}
 ];
 
 

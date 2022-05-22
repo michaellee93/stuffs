@@ -1,6 +1,14 @@
 <template>
   <div>
     <p class="is-size-3 block">Drafts</p>
+        <div
+          v-show="pub"
+          class="message is-success"
+        >
+          <div class="message-body">
+            Requested draft to be published. The approver will review.
+          </div>
+        </div>
     <button @click="createNew" class="block button is-success is-rounded">
       <span class="icon"><i class="fa fa-plus" /></span>
       <span>Create</span>
@@ -27,6 +35,11 @@ export default {
       drafts: {},
     };
   },
+	computed: {
+		pub(){
+			return this.$route.query.published ? true : false;
+		}
+	},
   methods: {
     async getDrafts() {
       this.drafts = await http.get(this.API_URL + "/drafts");
