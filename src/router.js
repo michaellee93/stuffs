@@ -11,7 +11,7 @@ import AdminView from './views/AdminView.vue'
 import SchemaView from './views/SchemaView.vue'
 import EditView from './views/EditView.vue'
 import ReportView from './views/ReportView.vue'
-
+import EasyView from './views/EasyView.vue'
 
 export var contentRoutes = window.schemas.map((e, i) => {
     let urlName = e.name.toLowerCase().replaceAll(' ', '_')
@@ -23,9 +23,10 @@ export var contentRoutes = window.schemas.map((e, i) => {
     }
 });
 
-
+import Dashboard from '@/views/Dashboard.vue'
 
 export const routes = [
+    { path: '/', component: Dashboard },
     // Other
     { path: '/search', component: searchView },
     //    { path: '/create', component: createContent },
@@ -46,7 +47,9 @@ export const routes = [
     { path: '/schemas', component: SchemaView },
     { path: '/editing', component: EditView },
 
-    { path: '/admin', component: AdminView }
+    { path: '/admin', component: AdminView },
+
+	{path:'/easy', component:EasyView}
 ];
 
 
