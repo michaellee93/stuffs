@@ -94,7 +94,7 @@ window.schemas = [
             }
         ],
     },
-
+/*
     //URL
     {
         name: "URL",
@@ -106,7 +106,7 @@ window.schemas = [
             }
         ]
     },
-
+*/
     //Product
     {
         name: "Product",
@@ -173,6 +173,7 @@ window.schemas = [
         ],
     },
 
+		/*
     // Credit standards
     {
         name: "Credit Standard",
@@ -194,6 +195,28 @@ window.schemas = [
             },
             {
                 name: "Restrictions",
+                type: "data",
+                required: true,
+            },
+        ]
+    },*/
+	
+// Credit standards
+    {
+        name: "Standard and Requirements",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Standards",
+                type: "data",
+                required: true,
+            },
+            {
+                name: "Requirements",
                 type: "data",
                 required: true,
             },
