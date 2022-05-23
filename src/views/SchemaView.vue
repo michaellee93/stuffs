@@ -62,6 +62,15 @@
               v-model="field.required"
             />
           </div>
+          <div class="column is-2">
+            <label class="label">Hidden</label>
+            <input
+              type="checkbox"
+              :disabled="!unlocked[selected][i]"
+              class="checkbox"
+              v-model="field.hidden"
+            />
+          </div>
           <div
             class="column is-2"
             v-show="field.type === 'select' || field.type === 'multiselect'"

@@ -37,7 +37,7 @@ export const routes = [
     { path: '/reports', component: ReportView },
 
     // Documents
-    { path: '/docs/:document_id', component: documentView, props: route => ({ document_id: route.params.document_id }) },
+    { name: 'thedoc', path: '/docs/:document_id', component: documentView, props: route => ({ document_id: route.params.document_id }) },
     { path: '/docs/:document_id/versions', component: historyView, props: route => ({ document_id: route.params.document_id }) },
     { path: '/docs/:document_id/versions/:version_id', component: VersionView, props: route => ({ document_id: route.params.document_id, version_id: route.params.version_id }) },
 

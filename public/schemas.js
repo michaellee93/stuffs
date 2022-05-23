@@ -94,7 +94,7 @@ window.schemas = [
             }
         ],
     },
-
+/*
     //URL
     {
         name: "URL",
@@ -106,7 +106,7 @@ window.schemas = [
             }
         ]
     },
-
+*/
     //Product
     {
         name: "Product",
