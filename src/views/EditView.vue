@@ -57,7 +57,7 @@
         </div>
 
         <div class="field">
-          <label class="label">Owner</label>
+          <label class="label">Approver</label>
           <div class="select is-fullwidth">
             <select v-model="owner" id="type is-primary">
               <option :value="i" v-for="(bl, i) in users" :key="i">

@@ -114,7 +114,9 @@ export default {
   computed: {
     fields() {
       return this.schemas[this.document.content_type - 1].fields.filter(
-        (e) => e.name !== "Title"
+        (e) => {
+					return e.name !== "Title" && !e.hidden 
+				}
       );
     },
     content_types() {

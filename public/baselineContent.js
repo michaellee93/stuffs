@@ -103,7 +103,7 @@ window.baselineContent = [
             "Anzics": ["011 — Nursery and Floriculture Production", "019 — Other Livestock Farming"]
         }
     },
-    {
+   /* {
         "_id": 10,
         "version": 1,
         "owner_id": 0,
@@ -111,12 +111,12 @@ window.baselineContent = [
         "created_at": "2022-02-07T12:14:07.700969Z",
         "published_at": "2022-02-07T12:14:07.700969Z",
         "content": { "URL": "https://www.google.com" }
-    },
-{
+    },*/
+		{
         "_id": 11,
         "version": 1,
         "owner_id": 0,
-        "content_type": 8,
+        "content_type": 7,
         "created_at": "2022-02-07T12:14:07.700969Z",
         "published_at": "2022-02-07T12:14:07.700969Z",
         "content": { 

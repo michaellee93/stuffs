@@ -3,7 +3,10 @@
 	<div id="app" class="column is-12">
 		<header class="columns">
 			<div class="column is-9">
-				<h1 class="title">Demo</h1>
+				<router-link to="/">
+					<h1 class="title">Demo</h1>
+				</router-link>
+
 			</div>
 			<div class="column is-3">
 				<div class="dropdown" v-if="loggedIn" @mouseover="showRole = true" @mouseleave="showRole = false"
@@ -18,7 +21,8 @@
 					</div>
 					<div class="dropdown-menu" id="dropdown-menu" role="menu">
 						<div class="dropdown-content">
-							<a v-for="(role, i) in roles" :key="role" href="#" class="dropdown-item" @click="selectRole(i)">{{ role }}</a>
+							<a v-for="(role, i) in roles" :key="role" href="#" class="dropdown-item" @click="selectRole(i)">{{ role
+							}}</a>
 						</div>
 					</div>
 				</div>
@@ -35,11 +39,13 @@
 					<div class="dropdown-menu" id="dropdown-menu" role="menu">
 						<div class="dropdown-content">
 							<a href="#" class="dropdown-item">Profile</a>
+							<router-link to="/easy" class="dropdown-item">Content</router-link>
+							<router-link to="/easysch" class="dropdown-item">Schemas</router-link>
 							<a @click="resetApp" class="dropdown-item">Reset App</a>
 							<hr class="dropdown-divider" />
 							<a @click="
-								loggedIn = false;
-							current_user_id = 1000;
+	loggedIn = false;
+current_user_id = 1000;
 							" class="dropdown-item">Logout</a>
 						</div>
 					</div>
@@ -49,7 +55,8 @@
 		<div class="tabs">
 			<ul>
 				<router-link :to="item.path" :active-class="'is-active'" :tag="'li'" v-for="(item, index) in tabs" :key="index">
-					<a>{{ item.name }}</a></router-link>
+					<a>{{ item.name }}</a>
+				</router-link>
 			</ul>
 		</div>
 		<router-view :user-role="roles[currRole]" :logged="loggedIn" :current_user="current_user_id"></router-view>
