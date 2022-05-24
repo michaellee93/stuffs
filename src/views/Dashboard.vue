@@ -75,7 +75,7 @@
 						</td>
 						<td>
 							<button @click="download(app.content)" class="button is-info" :class="{
-								hide: app.content_type !== 'Policy',
+								hide: app.content_type !== 'Standards',
 							}">
 								<span class="icon is-small"><i class="fas fa-download"></i></span>
 								<span>Download Policy Template</span>

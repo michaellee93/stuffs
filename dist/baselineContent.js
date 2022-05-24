@@ -144,7 +144,7 @@ window.baselineLinks = [
 window.baselineApp = [
 				{
 					content: "Example Title",
-					content_type: "Policy",
+					content_type: "Standards",
 					requester: "User Name",
 					published_at: new Date(),
 //					due: "2022-02-07T12:14:07.700969Z",
