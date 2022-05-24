@@ -115,7 +115,6 @@
 			</table>
 
 
-
 			<!--				<thead>
 					<th></th>
 					<th>Title</th>
@@ -246,4 +245,5 @@ export default {
 .selby {
 	cursor: pointer;
 }
+
 </style>

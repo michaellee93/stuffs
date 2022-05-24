@@ -1,4 +1,84 @@
 window.schemas = [
+	// Definition
+    {
+        name: "Glossary",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Definition",
+                type: "block",
+                required: true,
+            },
+        ]
+    },
+	
+		// Credit standards
+    {
+        name: "Standards",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Standards",
+                type: "data",
+                required: true,
+            },
+            {
+                name: "Requirements",
+                type: "data",
+                required: true,
+            },
+        ]
+    },
+
+    // Process
+    {
+        name: "Processes",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Category",
+                type: "select",
+                values: ["Origination", "Maintenance"],
+                required: true,
+            },
+            {
+                name: "Steps",
+                type: "blocks",
+                required: true,
+            }
+        ],
+    },
+
+    // Resources 
+    {
+        name: "Resources",
+        fields: [
+            {
+                name: "Title",
+                type: "text",
+                required: true,
+            },
+            {
+                name: "Content",
+                type: "blocks",
+                required: true,
+            }
+        ],
+    },
+
+	/*
     // Definition
     {
         name: "Definition",
@@ -94,7 +174,7 @@ window.schemas = [
             }
         ],
     },
-/*
+
     //URL
     {
         name: "URL",
@@ -106,7 +186,7 @@ window.schemas = [
             }
         ]
     },
-*/
+
     //Product
     {
         name: "Product",
@@ -173,35 +253,35 @@ window.schemas = [
         ],
     },
 
-		/*
-    // Credit standards
-    {
-        name: "Credit Standard",
-        fields: [
-            {
-                name: "Title",
-                type: "text",
-                required: true,
-            },
-            {
-                name: "Standards",
-                type: "data",
-                required: true,
-            },
-            {
-                name: "Pathways",
-                type: "data",
-                required: true,
-            },
-            {
-                name: "Restrictions",
-                type: "data",
-                required: true,
-            },
-        ]
-    },*/
+//		
+//    // Credit standards
+//    {
+//        name: "Credit Standard",
+//        fields: [
+//            {
+//                name: "Title",
+//                type: "text",
+//                required: true,
+//            },
+//            {
+//                name: "Standards",
+//                type: "data",
+//                required: true,
+//            },
+//            {
+//                name: "Pathways",
+//                type: "data",
+//                required: true,
+//            },
+//            {
+//                name: "Restrictions",
+//                type: "data",
+//                required: true,
+//            },
+//        ]
+//    },
 	
-// Credit standards
+		// Credit standards
     {
         name: "Standard and Requirements",
         fields: [
@@ -255,7 +335,9 @@ window.schemas = [
             },
 
         ]
-    }
+    }*/
+
+
 ];
 
 

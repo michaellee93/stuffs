@@ -98,8 +98,11 @@ export default {
 	},
 	methods: {
 		selectRole(i) {
-			this.currRole = i;
-			this.showRole = false;
+			if (this.currRole !== i) {
+				this.currRole = i;
+				this.showRole = false;
+				this.$router.push('/')
+			}
 		},
 		async resetApp() {
 			try {

@@ -1,7 +1,7 @@
 //import FakeIt from './components/FakeIt.vue'
 import ContentView from '@/views/ContentView.vue'
-import searchView from './views/SearchView.vue'
-import draftsView from './components/DraftsView.vue'
+import SearchView from './views/SearchView.vue'
+import DraftsView from './components/DraftsView.vue'
 import documentView from './views/DocumentView.vue'
 import historyView from './components/HistoryView.vue'
 //import createContent from './components/CreateContent.vue'
@@ -11,9 +11,9 @@ import AdminView from './views/AdminView.vue'
 import SchemaView from './views/SchemaView.vue'
 import EditView from './views/EditView.vue'
 import ReportView from './views/ReportView.vue'
-import EasyView from './views/EasyView.vue'
+//import EasyView from './views/EasyView.vue'
 import EasySchemaView from './views/EasySchemaView.vue'
-
+import  EasyEditView  from "./views/EasyEditView.vue";
 export var contentRoutes = window.schemas.map((e, i) => {
     let urlName = e.name.toLowerCase().replaceAll(' ', '_')
     return {
@@ -29,7 +29,7 @@ import Dashboard from '@/views/Dashboard.vue'
 export const routes = [
     { path: '/', component: Dashboard },
     // Other
-    { path: '/search', component: searchView },
+    { path: '/search', component: SearchView },
     //    { path: '/create', component: createContent },
     ...contentRoutes,
 
@@ -42,7 +42,7 @@ export const routes = [
     { path: '/docs/:document_id/versions/:version_id', component: VersionView, props: route => ({ document_id: route.params.document_id, version_id: route.params.version_id }) },
 
     // Drafts
-    { path: '/drafts', component: draftsView },
+    { path: '/drafts', component: DraftsView },
     { path: '/drafts/:document_id', component: DraftView, props: route => ({ document_id: route.params.document_id, cancel: true, save: true, publish: true }) },
 
     { path: '/schemas', component: SchemaView },
@@ -50,8 +50,9 @@ export const routes = [
 
     { path: '/admin', component: AdminView },
 
-	{path:'/easy', component:EasyView},
-	{path:'/easysch', component:EasySchemaView}
+//	{path:'/easy', component:EasyView},
+	{path:'/easysch', component:EasySchemaView},
+	{path:'/easy', component: EasyEditView}
 ];
 
 
