@@ -37,7 +37,7 @@
           </p>
           <div v-for="(d, i) in dependencies" :key="i" class="block">
             <p class="subtitle">
-              <a @click="handleSelect(d.id)">{{ d.content.Title }}</a>
+              <a @click="handleSelect(d.id)">{{ schemas[d.content_type-1].name + ' - '+ d.content.Title }}</a>
             </p>
           </div>
         </div>
@@ -72,6 +72,7 @@ export default {
   },
   async created() {
     this.getDependencies();
+		this.schemas = window.schemas;
   },
 };
 </script>
