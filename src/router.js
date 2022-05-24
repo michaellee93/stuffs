@@ -14,6 +14,8 @@ import ReportView from './views/ReportView.vue'
 //import EasyView from './views/EasyView.vue'
 import EasySchemaView from './views/EasySchemaView.vue'
 import  EasyEditView  from "./views/EasyEditView.vue";
+import  DiffView  from "./views/DiffView.vue";
+
 export var contentRoutes = window.schemas.map((e, i) => {
     let urlName = e.name.toLowerCase().replaceAll(' ', '_')
     return {
@@ -52,7 +54,8 @@ export const routes = [
 
 //	{path:'/easy', component:EasyView},
 	{path:'/easysch', component:EasySchemaView},
-	{path:'/easy', component: EasyEditView}
+	{path:'/easy', component: EasyEditView},
+	{path: '/diff', component: DiffView}
 ];
 
 

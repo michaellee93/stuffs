@@ -1,18 +1,20 @@
 window.baselineContent = [
 
-//    {
-//        "_id": 1,
-//        "version": 1,
-//        "owner_id": 0,
-//        "content_type": 1,
-//        "created_at": "2022-02-07T12:14:07.700969Z",
-//        "published_at": "2022-02-07T12:14:07.700969Z",
-//        "draft": true,
-//        "content": {
-//            "Definition": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Approval from the wife required" }] }] },
-//            "Title": "Level 2"
-//        }
-//    },
+    {
+        "_id": 1,
+        "version": 1,
+        "owner_id": 0,
+        "content_type": 1,
+        "created_at": "2022-02-07T12:14:07.700969Z",
+        "published_at": new Date("2022-02-07T12:14:07.700969Z"),
+        "due": new Date("2022-02-07T12:14:07.700969Z"),
+				"color": '#c40000',
+        "draft": true,
+        "content": {
+            "Definition": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Approval from the wife required" }] }] },
+            "Title": "Level 2"
+        }
+    },
 //    {
 //        "_id": 2,
 //        "version": 1,
@@ -134,7 +136,34 @@ window.baselineContent = [
 
 
 window.baselineLinks = [
-    { outcontent: 8, incontent: 2 },
-    { outcontent: 3, incontent: 2 },
-    { outcontent: 3, incontent: 1 },
+//    { outcontent: 8, incontent: 2 },
+//    { outcontent: 3, incontent: 2 },
+//    { outcontent: 3, incontent: 1 },
 ]
+
+window.baselineApp = [
+				{
+					content: "Example Title",
+					content_type: "Policy",
+					requester: "User Name",
+					published_at: new Date(),
+//					due: "2022-02-07T12:14:07.700969Z",
+//					color: '#c40000',
+				},
+				{
+					content: "Oven",
+					content_type: "Definition",
+					requester: "Alan Citizen",
+					published_at: new Date(),
+//					due: "2022-02-07T12:14:07.700969Z",
+//					color: 'transparent',
+				},
+{
+					content: "Oven",
+					content_type: "Definition",
+					requester: "Alan Citizen",
+					published_at: new Date(),
+//					due: "2022-02-07T12:14:07.700969Z",
+//					color: 'transparent',
+				},
+			]

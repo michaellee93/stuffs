@@ -39,7 +39,11 @@
 				<tbody>
 					<tr :key="i" v-for="(c, i) in contents">
 						<td><span class="icon"><i class="fas fa-exclamation" :style='{ color: c.color }'></i></span></td>
-						<td><router-link :to="'/docs/'+ c._id" >{{ c.content.Title }}</router-link></td>
+						<td>
+	<!--						<router-link :to="'/docs/' + c._id">{{ c.content.Title }}</router-link>-->
+							<a @click="createDraft(c._id)">{{ c.content.Title }}</a>
+
+						</td>
 						<td>{{ c.content_type }}</td>
 						<td>{{ c.published_at.toLocaleDateString() }}</td>
 						<td>{{ c.due.toLocaleDateString() }}</td>
@@ -57,8 +61,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(app, i) in approvals.filter((_, i)=>(approved[i]))" :key="i" 
-						:class="{ polrow: app.content_type == 'Policy' }">
+					<tr v-for="(app, i) in approvals.filter((_, i) => (approved[i]))" :key="i"
+						:class="{ polrow: app.content_type == 'Standards' }">
 						<td>
 							{{ app.published_at.toLocaleDateString() }}
 						</td>
@@ -98,7 +102,8 @@
 							<input v-else type="checkbox" class="checkbox" v-model="selections[i]" />
 						</td>
 						<td>
-							<a>{{ app.content }}</a>
+							<router-link to="/diff">{{ app.content }}</router-link>
+							<!--							<a>{{ app.content }}</a>-->
 						</td>
 						<td>
 							{{ app.content_type }}
@@ -136,6 +141,7 @@
 	</div>
 </template>
 <script>
+import http from '@/http'
 export default {
 	props: ['userRole'],
 	data() {
@@ -144,20 +150,7 @@ export default {
 			content_types: [],
 			dueOnes: false,
 			recentlyApproved: false,
-			approvals: [
-				{
-					content: "Example Title",
-					content_type: "Policy",
-					requester: "User Name",
-					published_at: new Date(),
-				},
-				{
-					content: "Oven",
-					content_type: "Definition",
-					requester: "Alan Citizen",
-					published_at: new Date(),
-				},
-			],
+			approvals: [],
 			approved: [false, false],
 			selections: [false, false],
 		}
@@ -181,26 +174,24 @@ export default {
 	created() {
 		this.content = window.baselineContent
 		this.content_types = window.schemas
-
-		for (let index = 0; index < this.content.length; index++) {
-			const element = this.content[index];
-			element.published_at = new Date(element.published_at)
-			const offset = Math.floor(Math.random() * 60) - 360;
-			const anch = element.published_at.getDate();
-			element.published_at.setDate(anch + offset)
-
-			element.due = new Date();
-			element.due.setDate(element.published_at.getDate() + 365)
-
-			element.color = "transparent"
-			if (offset + 365 < 30) {
-				element.color = "#c40000"
-			}
-
-			element.content_type = this.content_types[element.content_type - 1].name
-
-			this.approvals[0].content = window.baselineContent[window.baselineContent.length - 1].content.Title
-		}
+		this.approvals = window.baselineApp;
+		this.approved = Array(this.approvals.length).fill(false);
+		this.selections = Array(this.approvals.length).fill(false);
+		//
+				for (let index = 0; index < this.content.length; index++) {
+					const element = this.content[index];
+		//			element.due = new Date();
+		//			element.due.setDate(element.published_at.getDate() + 365)
+		//
+		//			element.color = "transparent"
+		//			if (offset + 365 < 30) {
+		//				element.color = "#c40000"
+		//			}
+		//
+					element.content_type = this.content_types[element.content_type - 1].name
+		//
+		//this.approvals[0].content = window.baselineContent[window.baselineContent.length - 1].content.Title
+				}
 	},
 	methods: {
 		async download(name) {
@@ -229,7 +220,15 @@ export default {
 					this.recentlyApproved = !this.recentlyApproved;
 					this.dueOnes = false;
 			}
-		}
+		},
+    async createDraft(id) {
+      try {
+        await http.post(this.API_URL + `/doc/${id}`, {});
+        this.$router.push(`/drafts/${id}`);
+      } catch (e) {
+        console.log("couldn't create drafts", e);
+      }
+    },
 	},
 }
 </script>
@@ -245,5 +244,4 @@ export default {
 .selby {
 	cursor: pointer;
 }
-
 </style>
