@@ -15,7 +15,9 @@ import ReportView from './views/ReportView.vue'
 import EasySchemaView from './views/EasySchemaView.vue'
 import  EasyEditView  from "./views/EasyEditView.vue";
 import  DiffView  from "./views/DiffView.vue";
+import MigrateView from './views/MigrateView.vue'
 
+//import Dashboard from '@/views/Dashboard.vue'
 export var contentRoutes = window.schemas.map((e, i) => {
     let urlName = e.name.toLowerCase().replaceAll(' ', '_')
     return {
@@ -26,10 +28,10 @@ export var contentRoutes = window.schemas.map((e, i) => {
     }
 });
 
-import Dashboard from '@/views/Dashboard.vue'
 
 export const routes = [
-    { path: '/', component: Dashboard },
+    //{ path: '/', component: Dashboard },
+    { path: '/', component: MigrateView},
     // Other
     { path: '/search', component: SearchView },
     //    { path: '/create', component: createContent },
@@ -51,6 +53,7 @@ export const routes = [
     { path: '/editing', component: EditView },
 
     { path: '/admin', component: AdminView },
+    { path: '/migrate', component: MigrateView },
 
 //	{path:'/easy', component:EasyView},
 	{path:'/easysch', component:EasySchemaView},
