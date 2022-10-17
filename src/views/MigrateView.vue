@@ -197,7 +197,7 @@ export default {
 				Data: [{
 					id: "1",
 					tabName: "",
-					value: "",
+					value: `<table width='100%'><thead><tr><td colspan='2'><p><strong>Risk Profile</strong></p></td></tr></thead><tbody><tr><td width='33%'>PD</td><td width='67%'>[Enter Text Here]</td></tr><tr><td width='33%'>LGD</td><td width='67%'>[Enter Text Here]</td></tr><tr><td width='33%'>Tenor</td><td width='67%'>[Enter Text Here]</td></tr><tr><td width='33%'>Servicing</td><td width='67%'>[Enter Text Here]</td></tr><tr><td width='33%'>Leverage</td><td width='67%'>[Enter Text Here]</td></tr></tbody></table>`,
 				}]
 			},
 			{ // Standard
