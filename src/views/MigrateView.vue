@@ -1,4 +1,4 @@
-	<template>
+<template>
 	<div>
 		<div class="columns">
 			<!--			<aside class="menu column is-2">
@@ -62,13 +62,13 @@
 							<a>{{ f.tabName
 							}}</a>
 						</li>
-						<li><a @click="addTab">Add</a></li>
+						<li><a @click="addTab">Add +</a></li>
 					</ul>
 				</div>
 
 				<div class="field" v-if="selectionIdx == 3">
 					<div class="field columns" :key="i" v-for="step, i in currentSchema.Data">
-						<div class="column is-1">{{ i + 1 }}</div>
+						<div class="column is-1">{{ step.id }}</div>
 						<div class="column is-11">
 							<label class="label">Author</label>
 							<input v-model="step.author" class="input" id="title" />
@@ -79,6 +79,7 @@
 				</div>
 
 				<div class="field" v-else-if="selectionIdx == 2">
+					<button v-show="currentSchema.Tab" class="button is-danger" @click="deleteTab">Delete tab</button>
 					<div class="field">
 						<label class="label">Tab name</label>
 						<input v-model="currentTab.tabName" class="input" id="title" />
@@ -89,9 +90,11 @@
 						<label class="label">Section Content</label>
 						<new-editor :active="true" :content.sync="sec.content" />
 					</div>
+					<button @click="addSection" class="button">Add section</button>
 				</div>
 
 				<div class="field" v-else>
+					<button v-show="currentSchema.Tab" class="button is-danger" @click="deleteTab">Delete tab</button>
 					<div class="field">
 						<label class="label">Tab name</label>
 						<input v-model="currentTab.tabName" class="input" id="title" />
@@ -99,7 +102,6 @@
 					<div class="field">
 						<new-editor :active="true" :content.sync="currentTab.value" />
 					</div>
-					<button @click="addSection" class="button">Add section</button>
 				</div>
 
 
@@ -234,7 +236,7 @@ export default {
 	methods: {
 		addStep() {
 			this.currentSchema.Data.push({
-				id: `${Math.ceil(Math.random() * 10000)}`,
+				id: `${this.currentSchema.Data.length+1}`,
 				author: "",
 				value: "",
 			})
@@ -288,6 +290,14 @@ export default {
 		},
 		copy() {
 			navigator.clipboard.writeText(this.$refs.output.innerText)
+		},
+		deleteTab() {
+			let del = this.currTab;
+			
+			if (this.currTab > 0) {
+				this.currTab = 0;
+				this.currentSchema.Data.splice(del);
+			}
 		}
 	},
 	computed: {
